@@ -10,5 +10,9 @@
         "fwd_invite_msg": "",
         "twitter_task": "",
         "report_msg": ""
+    },
+    "rewards": {
+        "signup": 10,
+        "referral": 5
     }
 }
