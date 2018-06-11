@@ -1,0 +1,14 @@
+{
+    "access_codes": {
+        "access_token": ""
+    },
+    "messages": {
+        "start_msg": "",
+        "start2_msg": "",
+        "done_msg": "",
+        "invite_msg": "",
+        "fwd_invite_msg": "",
+        "twitter_task": "",
+        "report_msg": ""
+    }
+}
