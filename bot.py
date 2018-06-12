@@ -353,7 +353,7 @@ reg_convo_handler = ConversationHandler(
         CommandHandler('start', start, pass_args=True),
         CommandHandler('update', edit_details)
         ],
-        
+
     states={
         'receive_eth_address': [
             MessageHandler(Filters.text, receive_eth_address)
