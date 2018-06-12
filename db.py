@@ -37,11 +37,11 @@ else:
         print('Connecting to the Postgres db DEV')
         try:
             conn = psycopg2.connect(
-                dbname='',
-                user='',
-                host='',
-                password='',
-                port=''
+                dbname='airdropking',
+                user='postgres',
+                host='localhost',
+                password='#AmOakO64$',
+                port='5432'
             )
         except psycopg2.Error as e:
             print(e.pgerror)
@@ -61,14 +61,14 @@ def create_table(connect_db):
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS participants
     (
-        participant_id SERIAL PRIMARY KEYm
+        participant_id SERIAL PRIMARY KEY,
         date_joined VARCHAR(255) NOT NULL,
         telegram_id INTEGER NOT NULL,
-        telegram_username VARCHAR(255) NOT NULL,
         chat_id INTEGER NOT NULL,
         ref_code VARCHAR(255) NOT NULL,
-        twitter_username VARCHAR(255) NOT NULL,
         eth_address VARCHAR(255) NOT NULL,
+        telegram_username VARCHAR(255) NOT NULL,
+        twitter_username VARCHAR(255) NOT NULL,
         gains INTEGER NOT NULL
     )
     """)
