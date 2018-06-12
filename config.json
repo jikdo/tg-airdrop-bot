@@ -3,16 +3,20 @@
         "access_token": ""
     },
     "messages": {
-        "start_msg": "",
+        "start_msg": "Hello!, Welcome to Pink Taxi bounty program. Please send me your erc20 address to begin.",
         "start2_msg": "",
-        "done_msg": "",
-        "invite_msg": "",
-        "fwd_invite_msg": "",
-        "twitter_task": "",
-        "report_msg": ""
+        "done_msg": "Congratulations! \n - You can now check your /gains\n - You can also /invite your friends to earn more\n - Join our community ( @PinkTaxi )\n Join our news channel ( @PinkTaxi ) \n",
+        "invite_msg": "Join Pink Taxi bounty program and earn up to 100 PT ($30) and more. Follow {}",
+        "fwd_invite_msg": "Send the above message to all your friends to earn 20 PT each",
+        "twitter_task": "Follow us on twitter and retweet our pinned message",
+        "facebook_task": "Like and Share our Facebook page",
+        "report_msg": "",
+        "rules_msg": "Just don't try gaming the system!",
+        "purchase_msg": "You can purchase PT tokens at www.pinktaxi.io"
     },
     "rewards": {
-        "signup": 10,
-        "referral": 5
-    }
+        "signup": 100,
+        "referral": 20
+    },
+    "ticker": "PT"
 }
