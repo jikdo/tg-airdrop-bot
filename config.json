@@ -1,9 +1,4 @@
 {
-    "access_codes": {
-        "tg_access_token": "592678992:AAE1yM7tEfU8nZ0xzNDqAZHOWSWpaJCEcWc",
-        "tw_consumer_key": "9JeM2A5tnItzOoFLU06LH2UPk",
-        "tw_consumer_secret": "C8etRwecwGJTt3J8MIoIGjJ7KqGXXQrtRMVfp2HNlzOCdoptO6"
-    },
     "messages": {
         "start_msg": "- Welcome to {} bounty program.\n\n- In the Menu below\n- Select Wallet to enter your ethereum address\n- Select Tasks to list bounty instructions.\n- Complete tasks to unlock tokens\n- Invite friends and earn more",
         "edit_msg": "You have to update all info again. Start by sending me your erc20 ethereum address",
