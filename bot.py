@@ -21,10 +21,14 @@ from telegram.ext import (
     CommandHandler,
     MessageHandler,
     Filters,
-    messagequeue as mq,
+    CallbackQueryHandler,
 )
-import telegram.bot
-from telegram.utils.request import Request
+
+from telegram import (
+    ReplyKeyboardMarkup,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+)
 import shortuuid
 
 from db import connect_db, create_table
@@ -42,36 +46,7 @@ with open(r'config.json', 'r') as file:
 # create table
 create_table(connect_db)
 
-
-class MQBot(telegram.bot.Bot):
-    '''A subclass of Bot which delegates send method handling to MQ'''
-    def __init__(self, *args, is_queued_def=True, mqueue=None, **kwargs):
-        super(MQBot, self).__init__(*args, **kwargs)
-        # below 2 attributes should be provided for decorator usage
-        self._is_messages_queued_default = is_queued_def
-        self._msg_queue = mqueue or mq.MessageQueue()
-
-    def __del__(self):
-        try:
-            self._msg_queue.stop()
-        except:
-            pass
-        super(MQBot, self).__del__()
-
-    @mq.queuedmessage
-    def send_message(self, *args, **kwargs):
-        '''Wrapped method would accept new `queued` and `isgroup`
-        OPTIONAL arguments'''
-        return super(MQBot, self).send_message(*args, **kwargs)
-
-
-# setup
-request = Request(con_pool_size=8)
-q = mq.MessageQueue()
-tfb_bot = MQBot(
-    config['access_codes']['tg_access_token'], request=request, mqueue=q
-    )
-updater = Updater(bot=tfb_bot)
+updater = Updater(config['access_codes']['tg_access_token'])
 dispatcher = updater.dispatcher
 
 
@@ -92,6 +67,17 @@ def start(bot, update, args=None):
 
     participant = cursor.fetchone()
 
+    # menu keyboard
+    menu_keyboard = [
+        ['/Wallet', '💎 Balance', '💬 Invite'],
+        ['❓ Help', '🔨 Tasks', '👏 Purchase {}'.format(config['ticker'])]
+        ]
+    reply_markup = ReplyKeyboardMarkup(
+        menu_keyboard,
+        resize_keyboard=True,
+        one_time_keyboard=False
+        )
+
     if not participant:
         # add new participant
         cursor.execute("""
@@ -104,9 +90,11 @@ def start(bot, update, args=None):
         eth_address,
         telegram_username,
         twitter_username,
-        gains)
+        facebook_name,
+        gains,
+        referred_no)
         VALUES
-        (%s, %s, %s, %s, %s, %s, %s, %s)
+        (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (date.today(),
               telegram_id,
               chat_id,
@@ -114,34 +102,70 @@ def start(bot, update, args=None):
               'n/a',
               telegram_username,
               'n/a',
-              config['rewards']['signup']))
+              'n/a',
+              config['rewards']['signup'],
+              0))
         print("new participant")
 
         # award referer
         if args:
             referral_link = args[0]
             cursor.execute("""
-            SELECT gains from participants WHERE ref_code=%s
+            SELECT gains, referred_no from participants WHERE ref_code=%s
             """, (referral_link,))
-            gains = cursor.fetchone()[0]
+            results = (cursor.fetchone())
+            gains = results[0]
+            referred_no = results[1]
 
             cursor.execute("""
-            UPDATE participants SET gains=%s WHERE ref_code=%s
-            """, (gains + config['rewards']['referral'], referral_link))
+            UPDATE participants SET gains=%s, referred_no=%s WHERE ref_code=%s
+            """, (
+                gains + config['rewards']['referral'],
+                referred_no + 1,
+                referral_link)
+                )
 
         bot.send_message(
             chat_id=update.message.chat_id,
             text=config['messages']['start_msg'].format(config['ICO_name']),
             disable_web_page_preview=True,
+            reply_markup=reply_markup
         )
-
+        cursor.close()
+        conn.commit()
+        conn.close()
     else:
-        bot.send_message(chat_id=update.message.chat_id,
-                         text="You are already in the campaign")
+        bot.send_message(
+            chat_id=update.message.chat_id,
+            text="You are already in the campaign",
+            reply_markup=reply_markup
+            )
+        cursor.close()
+        conn.commit()
+        conn.close()
 
-    cursor.close()
-    conn.commit()
-    conn.close()
+
+def menu_relayer(bot, update):
+    option = update.message.text
+
+    if option == '🔨 Tasks':
+        task_list(bot, update)
+    elif option == '💎 Balance':
+        get_gains(bot, update)
+    elif option == '💬 Invite':
+        get_referral_link(bot, update)
+    elif option == '👏 Purchase {}'.format(config['ticker']):
+        purchase(bot, update)
+    elif option == '❓ Help':
+        help_info(bot, update)
+
+
+def ask_eth_address(bot, update):
+    """ ask eth address """
+    bot.send_message(
+        chat_id=update.message.chat_id,
+        text='Enter your wallet address'
+    )
     return "receive_eth_address"
 
 
@@ -156,6 +180,13 @@ def receive_eth_address(bot, update):
     eth_pattern = re.compile(r'^0x[a-fA-F0-9]{40}$')
     is_eth_address = eth_pattern.match(eth_address)
 
+    if eth_address.lower() == "skip":
+        bot.send_message(
+            chat_id=update.message.chat_id,
+            text="Process skipped"
+        )
+        return ConversationHandler.END
+
     if is_eth_address:
         # update db
         cursor.execute("""
@@ -166,20 +197,82 @@ def receive_eth_address(bot, update):
         conn.close()
         bot.send_message(
             chat_id=update.message.chat_id,
-            text=config['messages']['twitter_task'].format(
-                config['social']['twitter']
-                ),
+            text="Wallet address saved",
             disable_web_page_preview=True,
             parse_mode="Markdown"
         )
-        return "receive_twitter_username"
+
+        bot.send_message(
+            chat_id=update.message.chat_id,
+            text="Complete a task to earn {} tokens".format(config['ticker']),
+        )
+        return ConversationHandler.END
     else:
         bot.send_message(
             chat_id=update.message.chat_id,
-            text="Invalid erc20 address. Please send me a valid one",
+            text="Invalid erc20 address. Please send me a valid one or send 'skip' to end process.",
             parse_mode="Markdown"
         )
         return "receive_eth_address"
+
+
+def task_list(bot, update):
+    """ show tasks to complete """
+    print("called")
+
+    header_buttons = [
+            InlineKeyboardButton(
+                "📢 Join our news channel",
+                url="{}".format(config['social']['telegram_channel'])
+                ),
+            InlineKeyboardButton(
+                "👫 Join our community",
+                url="{}".format(config['social']['telegram_group']),
+                ),
+        ]
+
+    footer_buttons = [
+        InlineKeyboardButton(
+                "🐥 Access Twitter Bounty",
+                callback_data='twitter',
+            ),
+    ]
+
+    footer2_buttons = [
+        InlineKeyboardButton(
+                "🐥 Access Facebook Bounty",
+                callback_data='facebook',
+            ),
+    ]
+
+    task_list_buttons = [
+       header_buttons,
+       footer_buttons[0:],
+       footer2_buttons[0:],
+    ]
+    reply_markup = InlineKeyboardMarkup(task_list_buttons)
+    bot.send_message(
+        chat_id=update.message.chat_id,
+        text="Complete the following tasks",
+        reply_markup=reply_markup
+    )
+
+
+def ask_twitter_username(bot, update, user_data=None):
+    """
+    Ask twitter name
+    """
+    """ ask eth address """
+    print(user_data)
+    bot.send_message(
+        chat_id=update.effective_user.id,
+        text=config['messages']['twitter_task'].format(
+            config['social']['twitter'],
+        ),
+        parse_mode='Markdown',
+        disable_web_page_preview=True,
+    )
+    return "receive_twitter_username"
 
 
 def receive_twitter_username(bot, update):
@@ -190,13 +283,21 @@ def receive_twitter_username(bot, update):
     cursor = conn.cursor()
 
     telegram_id = update.message.from_user.id
-    twitter_username = update.message.text
+    twitter_username = update.message.text.lower()
+
+    # Cancel step
+    if twitter_username == "skip":
+        bot.send_message(
+            chat_id=update.message.chat_id,
+            text="Process skipped"
+        )
+        return ConversationHandler.END
 
     # verify if username starts with @
     if twitter_username[0] is not '@':
         bot.send_message(
             chat_id=update.message.chat_id,
-            text="Invalid. Please start with '@'"
+            text="Invalid. Please start with '@' or type 'skip' to end this process."
         )
         return "receive_twitter_username"
     # update db
@@ -220,30 +321,53 @@ def receive_twitter_username(bot, update):
     return ConversationHandler.END
 
 
-# def receive_facebook_link(bot, update):
-#     """
-#     Receive facebook link
-#     """
-#     conn = connect_db()
-#     cursor = conn.cursor()
+def ask_facebook_name(bot, update, user_data=None):
+    """
+    Ask facebook username
+    """
 
-#     telegram_id = update.message.from_user.id
-#     facebook_username = update.message.text
+    bot.send_message(
+        chat_id=update.effective_user.id,
+        text=config['messages']['facebook_task'].format(
+            config['social']['facebook'],
+        ),
+        parse_mode='Markdown',
+        disable_web_page_preview=True,
+    )
+    return "receive_facebook_name"
 
-#     # update db
-#     cursor.execute("""
-#     UPDATE participants SET facebook_username=%s WHERE telegram_id=%s
-#     """, (facebook_username, telegram_id))
-#     cursor.close()
-#     conn.commit()
-#     conn.close()
 
-#     bot.send_message(
-#         chat_id=update.message.chat_id,
-#         text=config['messages']['done_msg'],
-#         disable_web_page_preview=True,
-#     )
-#     return ConversationHandler.END
+def receive_facebook_name(bot, update):
+    """
+    Receive facebook link
+    """
+    conn = connect_db()
+    cursor = conn.cursor()
+
+    telegram_id = update.message.from_user.id
+    facebook_name = update.message.text
+
+    if facebook_name.lower() == "skip":
+        bot.send_message(
+            chat_id=update.message.chat_id,
+            text="Process skipped"
+        )
+        return ConversationHandler.END
+
+    # update db
+    cursor.execute("""
+    UPDATE participants SET facebook_name=%s WHERE telegram_id=%s
+    """, (facebook_name, telegram_id))
+    cursor.close()
+    conn.commit()
+    conn.close()
+
+    bot.send_message(
+        chat_id=update.message.chat_id,
+        text=config['messages']['done_msg'],
+        disable_web_page_preview=True,
+    )
+    return ConversationHandler.END
 
 
 def list_rules(bot, update):
@@ -263,16 +387,25 @@ def get_gains(bot, update):
     cursor = conn.cursor()
 
     telegram_id = update.message.from_user.id
+
+    # gains total
     cursor.execute("""
     SELECT gains FROM participants WHERE telegram_id=%s
     """, (telegram_id, ))
     gains = cursor.fetchone()[0]
 
+    # get total referred
+    cursor.execute("""
+    SELECT referred_no FROM participants WHERE telegram_id=%s
+    """, (telegram_id,))
+    referred_no = cursor.fetchone()[0]
+
     bot.send_message(
         chat_id=update.message.chat_id,
         text=config['messages']['gains_msg'].format(
             gains,
-            config['ticker']),
+            config['ticker'],
+            referred_no),
         display_web_page_preview=True,
     )
     cursor.close()
@@ -351,9 +484,18 @@ def cancel(bot, update):
 reg_convo_handler = ConversationHandler(
     entry_points=[
         CommandHandler('start', start, pass_args=True),
-        CommandHandler('update', edit_details)
+        CommandHandler('Wallet', ask_eth_address),
+        CommandHandler('update', edit_details),
+        CallbackQueryHandler(
+            pattern='twitter',
+            callback=ask_twitter_username,
+            ),
+        CallbackQueryHandler(
+            pattern='facebook',
+            callback=ask_facebook_name,
+            ),
+            
         ],
-
     states={
         'receive_eth_address': [
             MessageHandler(Filters.text, receive_eth_address)
@@ -361,27 +503,31 @@ reg_convo_handler = ConversationHandler(
         'receive_twitter_username': [
             MessageHandler(Filters.text, receive_twitter_username)
             ],
-        # 'receive_facebook_link': [
-        #     MessageHandler(Filters.text, receive_facebook_link)
-        #     ]
-        # 'edit_details': {
-        #     MessageHandler(Filters.text, edit_details)
-        # },
+        'receive_facebook_name': [
+            MessageHandler(Filters.text, receive_facebook_name)
+        ]
     },
-    fallbacks=[CommandHandler('/cancel', cancel)]
+    fallbacks=[CommandHandler('cancel', cancel)]
 )
 
 # register handlers
+start_handler = CommandHandler('start', start)
+menu_relayer_handler = MessageHandler(Filters.text, menu_relayer)
 purchase_handler = CommandHandler('purchase', purchase)
-gains_handler = CommandHandler('gains', get_gains)
+gains_handler = CommandHandler('balance', get_gains)
 referral_link_handler = CommandHandler('invite', get_referral_link)
 help_handler = CommandHandler('help', help_info)
 rules_handler = CommandHandler('rules', rules)
+task_handler = CommandHandler('tasks', task_list)
 
 handlers = [
-    reg_convo_handler, purchase_handler,
+    reg_convo_handler,
+    start_handler,
+    purchase_handler,
     gains_handler, referral_link_handler,
     help_handler, rules_handler,
+    task_handler,
+    menu_relayer_handler,
     ]
 
 for handler in handlers:
@@ -391,6 +537,7 @@ for handler in handlers:
 def main():
     updater.start_polling()
     print("airdropkingbot started :::: ")
+    updater.idle()
 
 
 if __name__ == '__main__':
