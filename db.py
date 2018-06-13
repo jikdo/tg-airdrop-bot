@@ -69,7 +69,9 @@ def create_table(connect_db):
         eth_address VARCHAR(255) NOT NULL,
         telegram_username VARCHAR(255) NOT NULL,
         twitter_username VARCHAR(255) NOT NULL,
-        gains INTEGER NOT NULL
+        facebook_name VARCHAR(255) NOT NULL,
+        gains INTEGER NOT NULL,
+        referred_no INTEGER NOT NULL
     )
     """)
     cursor.close()
