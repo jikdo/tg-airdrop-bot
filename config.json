@@ -5,18 +5,18 @@
         "tw_consumer_secret": "C8etRwecwGJTt3J8MIoIGjJ7KqGXXQrtRMVfp2HNlzOCdoptO6"
     },
     "messages": {
-        "start_msg": "Hello!, Welcome to {} bounty program. Please send me your erc20 ethereum address to begin.",
+        "start_msg": "- Welcome to {} bounty program.\n\n- In the Menu below\n- Select Wallet to enter your ethereum address\n- Select Tasks to list bounty instructions.\n- Complete tasks to unlock tokens\n- Invite friends and earn more",
         "edit_msg": "You have to update all info again. Start by sending me your erc20 ethereum address",
-        "done_msg": "- Congratulations! \n- But finally join our community {} and news channel {} to complete process\n- You can now check your /gains\n- You can also /invite your friends to earn more\n- Use /help to find all commands",
+        "done_msg": "- Congratulations! \n Use Help to find all commands",
         "invite_msg": "Join Pink Taxi bounty program. Follow {}",
         "fwd_invite_msg": "Send the above message to all your friends to earn {} {} each",
-        "twitter_task": "Follow us on [Twitter]({}) and retweet our recent message. \n And send me your twitter username starting with '@'",
-        "facebook_task": "Like and Share our [Facebook page]({}) and send me your facebook full name",
+        "twitter_task": "Follow us on [Twitter]({}) and retweet our recent message. \n And send me your Twitter username starting with '@'",
+        "facebook_task": "Like and Share our [Facebook page]({}) and send me your facebook full name. Send 'skip' to end process",
         "report_msg": "",
         "rules_msg": "Just don't try gaming the system!",
         "purchase_msg": "You can purchase PT tokens at www.pinktaxi.io",
-        "gains_msg": "You have {} {}. /invite your friends to earn more",
-        "help_msg": "Avalailabe commands\n /invite - Generate invite link\n /gains - Check reward balance\n /purchase - Purchase tokens\n /update - Update information "
+        "gains_msg": "You have {} {} from {} referral(s).\n\n Invite your friends to earn more",
+        "help_msg": "- Navigate with the Menu\n- Complete all tasks to unlock all your tokens"
     },
     "rewards": {
         "signup": 100,
@@ -25,10 +25,10 @@
     "ticker": "PT",
     "social": {
         "twitter": "https://twitter.com/pinktaxiglobal",
-        "facebook": "https://facebook.com/pinktaxicoin",
-        "telegram_group": "@pinktaxiglobal",
-        "telegram_channel": "@pinktaxicoins"
+        "facebook": "https://facebook.com/pinktaxitoken",
+        "telegram_group": "https://t.me/pinktaxitoken",
+        "telegram_channel": "https://t.me/pinktaxi"
     },
-    "ICO_name": "Pink Taxi"
-
+    "ICO_name": "Pink Taxi",
+    "STAGE": "DEV"
 }
