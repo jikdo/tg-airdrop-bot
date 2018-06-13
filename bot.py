@@ -14,6 +14,7 @@ import logging
 import json
 from datetime import date
 import re
+import os
 
 from telegram.ext import (
     Updater,
@@ -46,7 +47,7 @@ with open(r'config.json', 'r') as file:
 # create table
 create_table(connect_db)
 
-updater = Updater(config['access_codes']['tg_access_token'])
+updater = Updater(os.environ['TG_ACCESS_TOKEN'])
 dispatcher = updater.dispatcher
 
 
