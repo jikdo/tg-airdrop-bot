@@ -240,7 +240,7 @@ def task_list(bot, update):
 
     footer2_buttons = [
         InlineKeyboardButton(
-                "🐥 Access Facebook Bounty",
+                "📘 Access Facebook Bounty",
                 callback_data='facebook',
             ),
     ]
@@ -494,7 +494,6 @@ reg_convo_handler = ConversationHandler(
             pattern='facebook',
             callback=ask_facebook_name,
             ),
-            
         ],
     states={
         'receive_eth_address': [
