@@ -37,11 +37,11 @@ else:
         print('Connecting to the Postgres db DEV')
         try:
             conn = psycopg2.connect(
-                dbname='airdropking',
-                user='postgres',
-                host='localhost',
-                password='#AmOakO64$',
-                port='5432'
+                dbname='',
+                user='',
+                host='',
+                password='',
+                port=''
             )
         except psycopg2.Error as e:
             print(e.pgerror)
