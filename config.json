@@ -6,7 +6,7 @@
         "invite_msg": "Join Pink Taxi bounty program. Follow {}",
         "fwd_invite_msg": "Send the above message to all your friends to earn {} {} each",
         "twitter_task": "Follow us on [Twitter]({}) and retweet our recent message. \n And send me your Twitter username starting with '@'",
-        "facebook_task": "Like and Share our [Facebook page]({}) and send me your facebook full name. Send 'skip' to end process",
+        "facebook_task": "Like and Share our [Facebook page]({}) and send me your facebook profile link. Send 'skip' to end process",
         "report_msg": "",
         "rules_msg": "Just don't try gaming the system!",
         "purchase_msg": "You can purchase PT tokens at www.pinktaxi.io",
@@ -17,7 +17,7 @@
         "signup": 100,
         "referral": 20
     },
-    "ticker": "PT",
+    "ticker": "PTT",
     "social": {
         "twitter": "https://twitter.com/pinktaxiglobal",
         "facebook": "https://facebook.com/pinktaxitoken",
