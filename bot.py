@@ -90,6 +90,7 @@ def start(bot, update, args=None):
             chat_id=update.message.chat_id,
             text="Airdrop exhausted. Visit our community for more info {}".format(config['social']['telegram_group'])
         )
+        print('airdrop shared' + total)
     else:
         if not participant:
             # add new participant
@@ -172,6 +173,8 @@ def menu_relayer(bot, update):
     elif option == '❓ Help':
         help_info(bot, update)
 
+
+# def check_airdrop_count(bot, update):
 
 def ask_eth_address(bot, update):
     """ ask eth address """
