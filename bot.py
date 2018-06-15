@@ -80,7 +80,7 @@ def start(bot, update, args=None):
         )
 
     cursor.execute("""
-    SELECT SUM('gains')
+    SELECT SUM(gains)
         FROM participants
     """)
     total = cursor.fetchone()[0]
