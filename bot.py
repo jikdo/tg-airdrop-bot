@@ -79,71 +79,83 @@ def start(bot, update, args=None):
         one_time_keyboard=False
         )
 
-    if not participant:
-        # add new participant
-        cursor.execute("""
-        INSERT INTO
-        participants
-        (date_joined,
-        telegram_id,
-        chat_id,
-        ref_code,
-        eth_address,
-        telegram_username,
-        twitter_username,
-        facebook_name,
-        gains,
-        referred_no)
-        VALUES
-        (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (date.today(),
-              telegram_id,
-              chat_id,
-              shortuuid.uuid(),
-              'n/a',
-              telegram_username,
-              'n/a',
-              'n/a',
-              config['rewards']['signup'],
-              0))
-        print("new participant")
+    cursor.execute("""
+    SELECT SUM('gains')
+        FROM participants
+    """)
+    total = cursor.fetchone()[0]
 
-        # award referer
-        if args:
-            referral_link = args[0]
-            cursor.execute("""
-            SELECT gains, referred_no from participants WHERE ref_code=%s
-            """, (referral_link,))
-            results = (cursor.fetchone())
-            gains = results[0]
-            referred_no = results[1]
-
-            cursor.execute("""
-            UPDATE participants SET gains=%s, referred_no=%s WHERE ref_code=%s
-            """, (
-                gains + config['rewards']['referral'],
-                referred_no + 1,
-                referral_link)
-                )
-
+    if total >= 1250000:
         bot.send_message(
-            chat_id=update.message.chat_id,
-            text=config['messages']['start_msg'].format(config['ICO_name']),
-            disable_web_page_preview=True,
-            reply_markup=reply_markup
+            chat_id=update.message.text,
+            text="Airdrop exhausted. Visit our community for more info {}".format(config['social']['telegram_group'])
         )
-        cursor.close()
-        conn.commit()
-        conn.close()
     else:
-        bot.send_message(
-            chat_id=update.message.chat_id,
-            text="You are already in the campaign",
-            reply_markup=reply_markup
+        if not participant:
+            # add new participant
+            cursor.execute("""
+            INSERT INTO
+            participants
+            (date_joined,
+            telegram_id,
+            chat_id,
+            ref_code,
+            eth_address,
+            telegram_username,
+            twitter_username,
+            facebook_name,
+            gains,
+            referred_no)
+            VALUES
+            (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (date.today(),
+                  telegram_id,
+                  chat_id,
+                  shortuuid.uuid(),
+                  'n/a',
+                  telegram_username,
+                  'n/a',
+                  'n/a',
+                  config['rewards']['signup'],
+                  0))
+            print("new participant")
+
+            # award referer
+            if args:
+                referral_link = args[0]
+                cursor.execute("""
+                SELECT gains, referred_no from participants WHERE ref_code=%s
+                """, (referral_link,))
+                results = (cursor.fetchone())
+                gains = results[0]
+                referred_no = results[1]
+
+                cursor.execute("""
+                UPDATE participants SET gains=%s, referred_no=%s WHERE ref_code=%s
+                """, (
+                    gains + config['rewards']['referral'],
+                    referred_no + 1,
+                    referral_link)
+                    )
+
+            bot.send_message(
+                chat_id=update.message.chat_id,
+                text=config['messages']['start_msg'].format(config['ICO_name']),
+                disable_web_page_preview=True,
+                reply_markup=reply_markup
             )
-        cursor.close()
-        conn.commit()
-        conn.close()
+            cursor.close()
+            conn.commit()
+            conn.close()
+        else:
+            bot.send_message(
+                chat_id=update.message.chat_id,
+                text="You are already in the campaign",
+                reply_markup=reply_markup
+                )
+            cursor.close()
+            conn.commit()
+            conn.close()
 
 
 def menu_relayer(bot, update):
@@ -389,29 +401,33 @@ def get_gains(bot, update):
 
     telegram_id = update.message.from_user.id
 
-    # gains total
-    cursor.execute("""
-    SELECT gains FROM participants WHERE telegram_id=%s
-    """, (telegram_id, ))
-    gains = cursor.fetchone()[0]
+    try:
+        # gains total
+        cursor.execute("""
+        SELECT gains FROM participants WHERE telegram_id=%s
+        """, (telegram_id, ))
+        gains = cursor.fetchone()[0]
 
-    # get total referred
-    cursor.execute("""
-    SELECT referred_no FROM participants WHERE telegram_id=%s
-    """, (telegram_id,))
-    referred_no = cursor.fetchone()[0]
+        if gains:
+            # get total referred
+            cursor.execute("""
+            SELECT referred_no FROM participants WHERE telegram_id=%s
+            """, (telegram_id,))
+            referred_no = cursor.fetchone()[0]
 
-    bot.send_message(
-        chat_id=update.message.chat_id,
-        text=config['messages']['gains_msg'].format(
-            gains,
-            config['ticker'],
-            referred_no),
-        display_web_page_preview=True,
-    )
-    cursor.close()
-    conn.commit()
-    conn.close()
+            bot.send_message(
+                chat_id=update.message.chat_id,
+                text=config['messages']['gains_msg'].format(
+                    gains,
+                    config['ticker'],
+                    referred_no),
+                display_web_page_preview=True,
+            )
+            cursor.close()
+            conn.commit()
+            conn.close()
+    except:
+        pass
 
 
 def get_referral_link(bot, update):
@@ -422,24 +438,30 @@ def get_referral_link(bot, update):
     cursor = conn.cursor()
 
     telegram_id = update.message.from_user.id
-    cursor.execute("""
-    SELECT ref_code FROM participants WHERE telegram_id=%s
-    """, (telegram_id, ))
-    ref_code = cursor.fetchone()[0]
-    reflink = "https://t.me/pinktaxibounty_bot?start=" + ref_code
 
-    bot.send_message(
-        chat_id=update.message.chat_id,
-        text=config['messages']['invite_msg'].format(reflink)
-    )
-    bot.send_message(
-        chat_id=update.message.chat_id,
-        text=config['messages']['fwd_invite_msg'].format(
-            config['rewards']['referral'],
-            config['ticker'],
-        ),
-        disable_web_page_preview=True,
-    )
+    try:
+        cursor.execute("""
+        SELECT ref_code FROM participants WHERE telegram_id=%s
+        """, (telegram_id, ))
+        ref_code = cursor.fetchone()[0]
+
+        if ref_code:
+            reflink = "https://t.me/pinktaxibounty_bot?start=" + ref_code
+
+            bot.send_message(
+                chat_id=update.message.chat_id,
+                text=config['messages']['invite_msg'].format(reflink)
+            )
+            bot.send_message(
+                chat_id=update.message.chat_id,
+                text=config['messages']['fwd_invite_msg'].format(
+                    config['rewards']['referral'],
+                    config['ticker'],
+                ),
+                disable_web_page_preview=True,
+            )
+    except:
+        pass
 
 
 def edit_details(bot, update):
