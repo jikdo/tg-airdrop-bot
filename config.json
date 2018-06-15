@@ -14,8 +14,9 @@
         "help_msg": "- Navigate with the Menu\n- Complete all tasks to unlock all your tokens"
     },
     "rewards": {
-        "signup": 100,
-        "referral": 20
+        "signup": 25,
+        "referral": 5,
+        "cap": 7284400
     },
     "ticker": "PTT",
     "social": {

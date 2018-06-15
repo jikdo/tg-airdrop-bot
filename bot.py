@@ -85,7 +85,7 @@ def start(bot, update, args=None):
     """)
     total = cursor.fetchone()[0]
 
-    if total >= 1250000:
+    if total >= config['rewards']['cap']:
         bot.send_message(
             chat_id=update.message.chat_id,
             text="Airdrop exhausted. Visit our community for more info {}".format(config['social']['telegram_group'])
