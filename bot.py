@@ -90,7 +90,7 @@ def start(bot, update, args=None):
             chat_id=update.message.chat_id,
             text="Airdrop exhausted. Visit our community for more info {}".format(config['social']['telegram_group'])
         )
-        print('airdrop shared' + total)
+        print('airdrop shared' + str(total))
     else:
         if not participant:
             # add new participant
