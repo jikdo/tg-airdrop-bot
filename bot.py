@@ -88,7 +88,8 @@ def start(bot, update, args=None):
     if total >= config['rewards']['cap']:
         bot.send_message(
             chat_id=update.message.chat_id,
-            text="Airdrop exhausted. Visit our community for more info {}".format(config['social']['telegram_group'])
+            text="Bounty completed.\nAllocated tokens finished. Visit our community for more info {}".format(config['social']['telegram_group']),
+            disable_web_page_preview=True
         )
         print('airdrop shared' + str(total))
     else:
