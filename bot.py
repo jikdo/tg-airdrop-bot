@@ -512,7 +512,7 @@ reg_convo_handler = ConversationHandler(
     entry_points=[
         CommandHandler('start', start, pass_args=True),
         CommandHandler('Wallet', ask_eth_address),
-        CommandHandler('update', edit_details),
+        # CommandHandler('update', edit_details),
         CallbackQueryHandler(
             pattern='twitter',
             callback=ask_twitter_username,
