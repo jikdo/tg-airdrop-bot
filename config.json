@@ -16,7 +16,7 @@
     "rewards": {
         "signup": 25,
         "referral": 5,
-        "cap": 8534400
+        "cap": 1
     },
     "ticker": "PTT",
     "social": {
