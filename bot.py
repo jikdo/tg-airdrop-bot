@@ -32,7 +32,7 @@ from telegram import (
 )
 import shortuuid
 
-from db import connect_db, create_table
+from db import connect_db, create_table, add_share_column
 
 # log data
 logging.basicConfig(
@@ -46,6 +46,7 @@ with open(r'config.json', 'r') as file:
 
 # create table
 create_table(connect_db)
+add_share_column(connect_db)
 
 updater = Updater(os.environ['TG_ACCESS_TOKEN'])
 dispatcher = updater.dispatcher
@@ -262,11 +263,28 @@ def task_list(bot, update):
             ),
     ]
 
+    footer3_buttons = [
+        InlineKeyboardButton(
+            "💭  Access Share Post Bounty",
+            callback_data='share'
+        )
+    ]
+
+    footer4_buttons = [
+        InlineKeyboardButton(
+            "🌟 Follow Baz (Optional)",
+            url='https://twitter.com/BazHODL'
+        )
+    ]
+
     task_list_buttons = [
        header_buttons,
        footer_buttons[0:],
        footer2_buttons[0:],
+       footer3_buttons[0:],
+       footer4_buttons[0:],
     ]
+
     reply_markup = InlineKeyboardMarkup(task_list_buttons)
     bot.send_message(
         chat_id=update.message.chat_id,
@@ -468,6 +486,60 @@ def get_referral_link(bot, update):
         pass
 
 
+def ask_share_link(bot, update):
+    """
+    ask users to share a a message
+    and send back the link to the shared message
+    """
+    bot.send_message(
+        chat_id=update.effective_user.id,
+        text=config['messages']['share_task']
+    )
+
+    bot.send_message(
+        chat_id=update.effective_user.id,
+        text=config['messages']['share_msg'],
+        disable_web_page_preview=True
+    )
+
+    return "receive_share_link"
+
+
+def receive_share_link(bot, update):
+    """
+    receive new link and save to db
+    """
+    share_link = update.message.text
+    telegram_id = update.message.from_user.id
+
+    conn = connect_db()
+    cursor = conn.cursor()
+
+    if share_link.lower() == 'skip':
+        bot.send_message(
+            chat_id=update.message.chat_id,
+            text='Process skipped'
+        )
+        return ConversationHandler.END
+    
+    try:
+        # update db
+        cursor.execute("""
+        UPDATE participants SET share_link=%s WHERE telegram_id=%s 
+        """, (share_link, telegram_id))
+        cursor.close()
+        conn.commit()
+        conn.close()
+
+        bot.send_message(
+            chat_id=update.message.chat_id,
+            text=config['messages']['done_msg']
+        )
+        return ConversationHandler.END
+    except:
+        pass
+
+
 def edit_details(bot, update):
     """ update bounty details """
     bot.send_message(
@@ -521,6 +593,10 @@ reg_convo_handler = ConversationHandler(
             pattern='facebook',
             callback=ask_facebook_name,
             ),
+        CallbackQueryHandler(
+            pattern='share',
+            callback=ask_share_link,
+        )
         ],
     states={
         'receive_eth_address': [
@@ -531,6 +607,9 @@ reg_convo_handler = ConversationHandler(
             ],
         'receive_facebook_name': [
             MessageHandler(Filters.text, receive_facebook_name)
+        ],
+        'receive_share_link': [
+            MessageHandler(Filters.text, receive_share_link)
         ]
     },
     fallbacks=[CommandHandler('cancel', cancel)]
