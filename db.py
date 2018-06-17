@@ -39,7 +39,7 @@ else:
             conn = psycopg2.connect(
                 dbname='',
                 user='',
-                host='',
+                host='localhost',
                 password='',
                 port=''
             )
@@ -74,6 +74,26 @@ def create_table(connect_db):
         referred_no INTEGER NOT NULL
     )
     """)
+    cursor.close()
+    conn.commit()
+    conn.close()
+
+
+def add_share_column(connect_db):
+    """
+    add share bounty colum
+    
+    params:
+    connect_db - connect db function
+    """
+    conn = connect_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    ALTER TABLE participants
+    ADD COLUMN IF NOT EXISTS share_link VARCHAR(255)
+    """)
+
     cursor.close()
     conn.commit()
     conn.close()
