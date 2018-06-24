@@ -1,32 +1,33 @@
 {
     "messages": {
-        "start_msg": "- Welcome to {} bounty program.\n\n- In the Menu below\n- Select Wallet to enter your ethereum address\n- Select Tasks to list bounty instructions.\n- Complete tasks to unlock tokens\n- Invite friends and earn more",
-        "edit_msg": "You have to update all info again. Start by sending me your erc20 ethereum address",
-        "done_msg": "- Congratulations! \n Use Help to find all commands",
-        "invite_msg": "Join Pink Taxi bounty program. Follow {}",
+        "start_msg": "- Welcome to {} bounty program.\n\n- Use the Menu to navigate\n- Complete tasks to unlock tokens.\n- Invite friends and earn more",
+        "done_msg": "- Congratulations!\n- Use Menu to navigate",
+        "invite_msg": "Join {} bounty program. Follow {}",
         "fwd_invite_msg": "Send the above message to all your friends to earn {} {} each",
         "twitter_task": "Follow us on [Twitter]({}) and retweet our recent message. \n And send me your Twitter username starting with '@'",
         "facebook_task": "Like and Share our [Facebook page]({}) and send me your facebook profile link. Send 'skip' to end process",
         "share_task": "Post the below message on Facebook or Twitter and send me the link or send 'skip' to end process",
-        "share_msg": "Watch John McAfee talk about Pink Taxi here http://www.youtube.com/watch?v=kVhIsW2EnKQ\n\nVisit www.pinktaxi.io to participate\n\n#taxiICO #PinkICO #pinkTaxiICO #ICO #tokenSale #preSale #icoTaxi #bestICO #topTenICO #taxi #ico #pink #johnMcAfee #rideHailing #investment#ERC20 #token", 
+        "share_msg": "", 
         "report_msg": "",
-        "rules_msg": "Just don't try gaming the system!",
-        "purchase_msg": "You can purchase PT tokens at www.pinktaxi.io",
+        "purchase_msg": "You can purchase {} tokens at {}",
         "gains_msg": "You have {} {} from {} referral(s).\n\n Invite your friends to earn more",
         "help_msg": "- Navigate with the Menu\n- Complete all tasks to unlock all your tokens"
     },
     "rewards": {
-        "signup": 5,
-        "referral": 2,
-        "cap": 7484400
+        "signup": 0,
+        "twitter": 0,
+        "facebook": 0,
+        "referral": 0,
+        "cap": 0
     },
-    "ticker": "PTT",
+    "ticker": "BTC",
     "social": {
-        "twitter": "https://twitter.com/pinktaxiglobal",
-        "facebook": "https://facebook.com/pinktaxitoken",
-        "telegram_group": "https://t.me/pinktaxitoken",
-        "telegram_channel": "https://t.me/pinktaxi"
+        "twitter": "https://twitter.com/?",
+        "facebook": "https://facebook.com/?",
+        "telegram_group": "https://t.me/?",
+        "telegram_channel": "https://t.me/?"
     },
-    "ICO_name": "Pink Taxi",
-    "STAGE": "DEV"
+    "ICO_name": "",
+    "website": "",
+    "bot_uname": "",
 }
