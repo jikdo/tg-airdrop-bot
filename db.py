@@ -37,11 +37,11 @@ else:
         print('Connecting to the Postgres db DEV')
         try:
             conn = psycopg2.connect(
-                dbname='',
-                user='',
+                dbname='ak_test_db',
+                user='postgres',
                 host='localhost',
                 password='',
-                port=''
+                port='5432'
             )
         except psycopg2.Error as e:
             print(e.pgerror)
