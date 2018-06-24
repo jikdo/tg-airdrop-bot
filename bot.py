@@ -31,6 +31,7 @@ from telegram import (
     InlineKeyboardMarkup,
 )
 import shortuuid
+import psycopg2
 
 from db import connect_db, create_table, add_share_column
 
@@ -293,12 +294,11 @@ def task_list(bot, update):
     )
 
 
-def ask_twitter_username(bot, update, user_data=None):
+def ask_twitter_username(bot, update):
     """
     Ask twitter name
     """
     """ ask eth address """
-    print(user_data)
     bot.send_message(
         chat_id=update.effective_user.id,
         text=config['messages']['twitter_task'].format(
@@ -335,10 +335,17 @@ def receive_twitter_username(bot, update):
             text="Invalid. Please start with '@' or type 'skip' to end this process."
         )
         return "receive_twitter_username"
+
+    # get gains
+    cursor.execute("""
+    SELECT gains FROM participants WHERE telegram_id=%s
+    """, (telegram_id,))
+    gains = cursor.fetchone()[0]
+
     # update db
     cursor.execute("""
-    UPDATE participants SET twitter_username=%s WHERE telegram_id=%s
-    """, (twitter_username, telegram_id))
+    UPDATE participants SET twitter_username=%s, gains=%s WHERE telegram_id=%s
+    """, (twitter_username, gains + config['rewards']['twitter'], telegram_id))
     cursor.close()
     conn.commit()
     conn.close()
@@ -389,10 +396,16 @@ def receive_facebook_name(bot, update):
         )
         return ConversationHandler.END
 
+    # get gains
+    cursor.execute("""
+    SELECT gains FROM participants WHERE telegram_id=%s
+    """, (telegram_id,))
+    gains = cursor.fetchone()[0]
+
     # update db
     cursor.execute("""
-    UPDATE participants SET facebook_name=%s WHERE telegram_id=%s
-    """, (facebook_name, telegram_id))
+    UPDATE participants SET facebook_name=%s, gains=%s WHERE telegram_id=%s
+    """, (facebook_name, gains + config['rewards']['facebook'] telegram_id))
     cursor.close()
     conn.commit()
     conn.close()
@@ -448,8 +461,11 @@ def get_gains(bot, update):
             cursor.close()
             conn.commit()
             conn.close()
-    except:
-        pass
+    except psycopg2.Error:
+        bot.send_message(
+            chat_id=update.message.chat_id,
+            text='- Your info not available\n- Use /start to register'
+        )
 
 
 def get_referral_link(bot, update):
@@ -482,8 +498,11 @@ def get_referral_link(bot, update):
                 ),
                 disable_web_page_preview=True,
             )
-    except:
-        pass
+    except psycopg2.Error:
+        bot.send_message(
+            chat_id=update.message.chat_id,
+            text='- Your info not available\n- Use /start to register'
+        )
 
 
 def ask_share_link(bot, update):
@@ -522,7 +541,6 @@ def receive_share_link(bot, update):
         )
         return ConversationHandler.END
     
-    try:
         # update db
         cursor.execute("""
         UPDATE participants SET share_link=%s WHERE telegram_id=%s 
@@ -536,18 +554,6 @@ def receive_share_link(bot, update):
             text=config['messages']['done_msg']
         )
         return ConversationHandler.END
-    except:
-        pass
-
-
-def edit_details(bot, update):
-    """ update bounty details """
-    bot.send_message(
-            chat_id=update.message.chat_id,
-            text=config['messages']['edit_msg'],
-            disable_web_page_preview=True,
-        )
-    return "receive_eth_address"
 
 
 def purchase(bot, update):
@@ -616,22 +622,10 @@ reg_convo_handler = ConversationHandler(
 )
 
 # register handlers
-start_handler = CommandHandler('start', start)
 menu_relayer_handler = MessageHandler(Filters.text, menu_relayer)
-purchase_handler = CommandHandler('purchase', purchase)
-gains_handler = CommandHandler('balance', get_gains)
-referral_link_handler = CommandHandler('invite', get_referral_link)
-help_handler = CommandHandler('help', help_info)
-rules_handler = CommandHandler('rules', rules)
-task_handler = CommandHandler('tasks', task_list)
 
 handlers = [
     reg_convo_handler,
-    start_handler,
-    purchase_handler,
-    gains_handler, referral_link_handler,
-    help_handler, rules_handler,
-    task_handler,
     menu_relayer_handler,
     ]
 
@@ -641,7 +635,9 @@ for handler in handlers:
 
 def main():
     updater.start_polling()
-    print("airdropkingbot started :::: ")
+    print("airdropkingbot started :::: running {} campaign".format(
+        config['ICO_name'])
+        )
     updater.idle()
 
 
