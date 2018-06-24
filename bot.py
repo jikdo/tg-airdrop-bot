@@ -33,7 +33,7 @@ from telegram import (
 import shortuuid
 import psycopg2
 
-from db import connect_db, create_table, add_share_column
+from db import connect_db, create_table
 
 # log data
 logging.basicConfig(
@@ -47,7 +47,6 @@ with open(r'config.json', 'r') as file:
 
 # create table
 create_table(connect_db)
-add_share_column(connect_db)
 
 updater = Updater(os.environ['TG_ACCESS_TOKEN'])
 dispatcher = updater.dispatcher
@@ -87,13 +86,16 @@ def start(bot, update, args=None):
     """)
     total = cursor.fetchone()[0]
 
+    if total is None:
+        total = 0
+
     if total >= config['rewards']['cap']:
         bot.send_message(
             chat_id=update.message.chat_id,
             text="Bounty completed.\nAllocated tokens finished. Visit our community for more info {}".format(config['social']['telegram_group']),
             disable_web_page_preview=True
         )
-        print('airdrop shared' + str(total))
+        print('airdrop shared ::: ' + str(total))
     else:
         if not participant:
             # add new participant
@@ -264,26 +266,25 @@ def task_list(bot, update):
             ),
     ]
 
-    footer3_buttons = [
-        InlineKeyboardButton(
-            "💭  Access Share Post Bounty",
-            callback_data='share'
-        )
-    ]
+    # footer3_buttons = [
+    #     InlineKeyboardButton(
+    #         "💭  Access Share Post Bounty",
+    #         callback_data='share'
+    #     )
+    # ]
 
     footer4_buttons = [
         InlineKeyboardButton(
-            "🌟 Follow Baz (Optional)",
-            url='https://twitter.com/BazHODL'
+            "🌟 Join CryptoKnightAirdrops",
+            url='https://t.me/CryptoKnightAirdrops'
         )
     ]
 
     task_list_buttons = [
        header_buttons,
-       footer_buttons[0:],
-       footer2_buttons[0:],
-       footer3_buttons[0:],
-       footer4_buttons[0:],
+       footer_buttons,
+       footer2_buttons,
+       footer4_buttons,
     ]
 
     reply_markup = InlineKeyboardMarkup(task_list_buttons)
@@ -405,7 +406,7 @@ def receive_facebook_name(bot, update):
     # update db
     cursor.execute("""
     UPDATE participants SET facebook_name=%s, gains=%s WHERE telegram_id=%s
-    """, (facebook_name, gains + config['rewards']['facebook'] telegram_id))
+    """, (facebook_name, gains + config['rewards']['facebook'], telegram_id))
     cursor.close()
     conn.commit()
     conn.close()
@@ -484,11 +485,14 @@ def get_referral_link(bot, update):
         ref_code = cursor.fetchone()[0]
 
         if ref_code:
-            reflink = "https://t.me/pinktaxibounty_bot?start=" + ref_code
-
+            reflink = "https://t.me/{}?start=".format(config['bot_uname']) + ref_code
+            
             bot.send_message(
                 chat_id=update.message.chat_id,
-                text=config['messages']['invite_msg'].format(reflink)
+                text=config['messages']['invite_msg'].format(
+                    config['ICO_name'],
+                    reflink
+                    )
             )
             bot.send_message(
                 chat_id=update.message.chat_id,
@@ -559,7 +563,10 @@ def receive_share_link(bot, update):
 def purchase(bot, update):
     bot.send_message(
         chat_id=update.message.chat_id,
-        text=config['messages']['purchase_msg'],
+        text=config['messages']['purchase_msg'].format(
+            config['ticker'],
+            config['website'],
+        ),
         disable_web_page_preview=True,
     )
 
@@ -569,15 +576,6 @@ def help_info(bot, update):
     bot.send_message(
         chat_id=update.message.chat_id,
         text=config['messages']['help_msg'],
-        disable_web_page_preview=True
-    )
-
-
-def rules(bot, update):
-    """ displays rules """
-    bot.send_message(
-        chat_id=update.message.chat_id,
-        text=config['messages']['rules_msg'],
         disable_web_page_preview=True
     )
 
