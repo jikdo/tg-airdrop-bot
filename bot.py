@@ -347,9 +347,9 @@ def receive_twitter_username(bot, update):
     cursor.execute("""
     SELECT twitter_username FROM participants WHERE telegram_id=%s
     """, (telegram_id,))
-    twitter_username = cursor.fetchone()[0]
+    old_twitter_username = cursor.fetchone()[0]
 
-    if twitter_username == 'n/a':
+    if old_twitter_username == 'n/a':
         # update db
         cursor.execute("""
         UPDATE participants SET twitter_username=%s, gains=%s WHERE telegram_id=%s
@@ -416,18 +416,18 @@ def receive_facebook_name(bot, update):
 
     # get twitter_username
     cursor.execute("""
-    SELECT twitter_username FROM participants WHERE telegram_id=%s
+    SELECT facebook_name FROM participants WHERE telegram_id=%s
     """, (telegram_id,))
-    facebook_name = cursor.fetchone()[0]
+    old_facebook_name = cursor.fetchone()[0]
 
-    if facebook_name == 'n/a':
+    if old_facebook_name == 'n/a':
         # update db
         cursor.execute("""
         UPDATE participants SET facebook_name=%s, gains=%s WHERE telegram_id=%s
         """, (facebook_name, gains + config['rewards']['facebook'], telegram_id))
     else:
         cursor.execute("""
-        UPDATE participants SET facebook_name=%s, gains=%s WHERE telegram_id=%s
+        UPDATE participants SET facebook_name=%s WHERE telegram_id=%s
         """, (facebook_name, telegram_id))
     cursor.close()
     conn.commit()

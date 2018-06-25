@@ -40,7 +40,7 @@ else:
                 dbname='ak_test_db',
                 user='postgres',
                 host='localhost',
-                password='',
+                password='#AmOakO64$',
                 port='5432'
             )
         except psycopg2.Error as e:

@@ -14,20 +14,20 @@
         "help_msg": "- Navigate with the Menu\n- Complete all tasks to unlock all your tokens"
     },
     "rewards": {
-        "signup": 0,
-        "twitter": 0,
-        "facebook": 0,
-        "referral": 0,
-        "cap": 0
+        "signup": 20,
+        "twitter": 10,
+        "facebook": 10,
+        "referral": 5,
+        "cap": 700000
     },
-    "ticker": "BTC",
+    "ticker": "ZB",
     "social": {
-        "twitter": "https://twitter.com/?",
-        "facebook": "https://facebook.com/?",
-        "telegram_group": "https://t.me/?",
-        "telegram_channel": "https://t.me/?"
+        "twitter": "https://twitter.com/zerobank_cash",
+        "facebook": "https://www.facebook.com/zerobank.cash/",
+        "telegram_group": "https://t.me/zerobank_cash",
+        "telegram_channel": "https://t.me/zerobank_news"
     },
-    "ICO_name": "",
-    "website": "",
-    "bot_uname": ""
+    "ICO_name": "Zero Bank",
+    "website": "https://zerobank.cash",
+    "bot_uname": "zerobankbounty_bot"
 }
