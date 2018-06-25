@@ -343,10 +343,21 @@ def receive_twitter_username(bot, update):
     """, (telegram_id,))
     gains = cursor.fetchone()[0]
 
-    # update db
+    # get twitter_username
     cursor.execute("""
-    UPDATE participants SET twitter_username=%s, gains=%s WHERE telegram_id=%s
-    """, (twitter_username, gains + config['rewards']['twitter'], telegram_id))
+    SELECT twitter_username FROM participants WHERE telegram_id=%s
+    """, (telegram_id,))
+    twitter_username = cursor.fetchone()[0]
+
+    if twitter_username == 'n/a':
+        # update db
+        cursor.execute("""
+        UPDATE participants SET twitter_username=%s, gains=%s WHERE telegram_id=%s
+        """, (twitter_username, gains + config['rewards']['twitter'], telegram_id))
+    else:
+        cursor.execute("""
+        UPDATE participants SET twitter_username=%s WHERE telegram_id=%s
+        """, (twitter_username, telegram_id))
     cursor.close()
     conn.commit()
     conn.close()
@@ -403,10 +414,21 @@ def receive_facebook_name(bot, update):
     """, (telegram_id,))
     gains = cursor.fetchone()[0]
 
-    # update db
+    # get twitter_username
     cursor.execute("""
-    UPDATE participants SET facebook_name=%s, gains=%s WHERE telegram_id=%s
-    """, (facebook_name, gains + config['rewards']['facebook'], telegram_id))
+    SELECT twitter_username FROM participants WHERE telegram_id=%s
+    """, (telegram_id,))
+    facebook_name = cursor.fetchone()[0]
+
+    if facebook_name == 'n/a':
+        # update db
+        cursor.execute("""
+        UPDATE participants SET facebook_name=%s, gains=%s WHERE telegram_id=%s
+        """, (facebook_name, gains + config['rewards']['facebook'], telegram_id))
+    else:
+        cursor.execute("""
+        UPDATE participants SET facebook_name=%s, gains=%s WHERE telegram_id=%s
+        """, (facebook_name, telegram_id))
     cursor.close()
     conn.commit()
     conn.close()
@@ -486,7 +508,7 @@ def get_referral_link(bot, update):
 
         if ref_code:
             reflink = "https://t.me/{}?start=".format(config['bot_uname']) + ref_code
-            
+
             bot.send_message(
                 chat_id=update.message.chat_id,
                 text=config['messages']['invite_msg'].format(
