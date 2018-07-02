@@ -244,7 +244,7 @@ def task_list(bot, update):
     header_button1 = [
         InlineKeyboardButton(
                 "📢 Join our news channel (7.5 FXP)",
-                url="{}".format(config['social']['telegram_channel'])
+                url="{}".format(config['social']['telegram_channel']),
                 ),
         ]
 
@@ -384,74 +384,82 @@ def ask_facebook_name(bot, update, user_data=None):
     Ask facebook username
     """
 
-    bot.send_message(
-        chat_id=update.effective_user.id,
-        text=config['messages']['facebook_task'].format(
-            config['social']['facebook'],
-        ),
-        parse_mode='Markdown',
-        disable_web_page_preview=True,
-    )
-    return "receive_facebook_name"
-
+    try:
+        bot.send_message(
+            chat_id=update.effective_user.id,
+            text=config['messages']['facebook_task'].format(
+                config['social']['facebook'],
+            ),
+            parse_mode='Markdown',
+            disable_web_page_preview=True,
+        )
+        return "receive_facebook_name"
+    except:
+        pass
 
 def receive_facebook_name(bot, update):
     """
     Receive facebook link
     """
-    conn = connect_db()
-    cursor = conn.cursor()
+    try:
+        conn = connect_db()
+        cursor = conn.cursor()
 
-    telegram_id = update.message.from_user.id
-    facebook_name = update.message.text
+        telegram_id = update.message.from_user.id
+        facebook_name = update.message.text
 
-    if facebook_name.lower() == "skip":
+        if facebook_name.lower() == "skip":
+            bot.send_message(
+                chat_id=update.message.chat_id,
+                text="Process skipped"
+            )
+            return ConversationHandler.END
+
+        # get gains
+        cursor.execute("""
+        SELECT gains FROM participants WHERE telegram_id=%s
+        """, (telegram_id,))
+        gains = cursor.fetchone()[0]
+
+        # get twitter_username
+        cursor.execute("""
+        SELECT facebook_name FROM participants WHERE telegram_id=%s
+        """, (telegram_id,))
+        old_facebook_name = cursor.fetchone()[0]
+
+        if old_facebook_name == 'n/a':
+            # update db
+            cursor.execute("""
+            UPDATE participants SET facebook_name=%s, gains=%s WHERE telegram_id=%s
+            """, (facebook_name, gains + config['rewards']['facebook'], telegram_id))
+        else:
+            cursor.execute("""
+            UPDATE participants SET facebook_name=%s WHERE telegram_id=%s
+            """, (facebook_name, telegram_id))
+        cursor.close()
+        conn.commit()
+        conn.close()
+
         bot.send_message(
             chat_id=update.message.chat_id,
-            text="Process skipped"
+            text=config['messages']['done_msg'],
+            disable_web_page_preview=True,
         )
         return ConversationHandler.END
-
-    # get gains
-    cursor.execute("""
-    SELECT gains FROM participants WHERE telegram_id=%s
-    """, (telegram_id,))
-    gains = cursor.fetchone()[0]
-
-    # get twitter_username
-    cursor.execute("""
-    SELECT facebook_name FROM participants WHERE telegram_id=%s
-    """, (telegram_id,))
-    old_facebook_name = cursor.fetchone()[0]
-
-    if old_facebook_name == 'n/a':
-        # update db
-        cursor.execute("""
-        UPDATE participants SET facebook_name=%s, gains=%s WHERE telegram_id=%s
-        """, (facebook_name, gains + config['rewards']['facebook'], telegram_id))
-    else:
-        cursor.execute("""
-        UPDATE participants SET facebook_name=%s WHERE telegram_id=%s
-        """, (facebook_name, telegram_id))
-    cursor.close()
-    conn.commit()
-    conn.close()
-
-    bot.send_message(
-        chat_id=update.message.chat_id,
-        text=config['messages']['done_msg'],
-        disable_web_page_preview=True,
-    )
-    return ConversationHandler.END
+    except:
+        pass
 
 
 def list_rules(bot, update):
     """ send rules of the bounty """
-    bot.send_message(
-        chat_id=update.message.chat_id,
-        text=config['messages']['rules_msg'],
-        disable_web_page_preview=True,
-    )
+    try:
+        bot.send_message(
+            chat_id=update.message.chat_id,
+            text=config['messages']['rules_msg'],
+            disable_web_page_preview=True,
+        )
+    except:
+        pass
 
 
 def get_gains(bot, update):
@@ -488,7 +496,7 @@ def get_gains(bot, update):
             cursor.close()
             conn.commit()
             conn.close()
-    except psycopg2.Error:
+    except:
         bot.send_message(
             chat_id=update.message.chat_id,
             text='- Your info not available\n- Use /start to register'
@@ -528,7 +536,7 @@ def get_referral_link(bot, update):
                 ),
                 disable_web_page_preview=True,
             )
-    except psycopg2.Error:
+    except:
         bot.send_message(
             chat_id=update.message.chat_id,
             text='- Your info not available\n- Use /start to register'
