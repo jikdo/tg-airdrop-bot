@@ -14,20 +14,20 @@
         "help_msg": "- Navigate with the Menu\n- Complete all tasks to unlock all your tokens"
     },
     "rewards": {
-        "signup": 20,
-        "twitter": 10,
-        "facebook": 10,
+        "signup": 15,
+        "twitter": 7.5,
+        "facebook": 7.5,
         "referral": 5,
-        "cap": 700000
+        "cap": 3000000
     },
-    "ticker": "ZB",
+    "ticker": "FXP",
     "social": {
-        "twitter": "https://twitter.com/zerobank_cash",
-        "facebook": "https://www.facebook.com/zerobank.cash/",
-        "telegram_group": "https://t.me/zerobank_cash",
-        "telegram_channel": "https://t.me/zerobank_news"
+        "twitter": "https://twitter.com/fxpayglobal",
+        "facebook": "https://www.facebook.com/fxpayglobal",
+        "telegram_group": "https://t.me/fxpglobal",
+        "telegram_channel": "https://t.me/fxpaynews"
     },
-    "ICO_name": "Zero Bank",
-    "website": "https://zerobank.cash",
-    "bot_uname": "zerobankbounty_bot"
+    "ICO_name": "FxPay",
+    "website": "https://fxpay.io",
+    "bot_uname": "fxpaybounty_bot"
 }

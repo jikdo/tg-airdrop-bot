@@ -241,27 +241,30 @@ def task_list(bot, update):
     """ show tasks to complete """
     print("called")
 
-    header_buttons = [
-            InlineKeyboardButton(
-                "📢 Join our news channel",
+    header_button1 = [
+        InlineKeyboardButton(
+                "📢 Join our news channel (7.5 FXP)",
                 url="{}".format(config['social']['telegram_channel'])
-                ),
-            InlineKeyboardButton(
-                "👫 Join our community",
-                url="{}".format(config['social']['telegram_group']),
                 ),
         ]
 
+    header_button2 =[
+        InlineKeyboardButton(
+                "👫 Join our community (7.5 FXP)",
+                url="{}".format(config['social']['telegram_group']),
+                ),
+    ]
+
     footer_buttons = [
         InlineKeyboardButton(
-                "🐥 Access Twitter Bounty",
+                "🐥 Access Twitter Bounty (7.5 FXP)",
                 callback_data='twitter',
             ),
     ]
 
     footer2_buttons = [
         InlineKeyboardButton(
-                "📘 Access Facebook Bounty",
+                "📘 Access Facebook Bounty (7.5 FXP)",
                 callback_data='facebook',
             ),
     ]
@@ -275,13 +278,14 @@ def task_list(bot, update):
 
     footer4_buttons = [
         InlineKeyboardButton(
-            "🌟 Join CryptoKnightAirdrops",
+            "🌟 Join CryptoKnightAirdrops [optional]",
             url='https://t.me/CryptoKnightAirdrops'
         )
     ]
 
     task_list_buttons = [
-       header_buttons,
+       header_button1,
+       header_button2,
        footer_buttons,
        footer2_buttons,
        footer4_buttons,
