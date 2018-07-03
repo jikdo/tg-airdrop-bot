@@ -9,7 +9,7 @@
         "share_task": "Post the below message on Facebook or Twitter and send me the link or send 'skip' to end process",
         "share_msg": "", 
         "report_msg": "",
-        "purchase_msg": "You can purchase {} tokens at {}",
+        "purchase_msg": "- You can purchase {} tokens at {}\n- Now free 100% forex credit cash back",
         "gains_msg": "You have {} {} from {} referral(s).\n\n Invite your friends to earn more",
         "help_msg": "- Navigate with the Menu\n- Complete all tasks to unlock all your tokens"
     },

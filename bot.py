@@ -185,7 +185,7 @@ def ask_eth_address(bot, update):
     """ ask eth address """
     bot.send_message(
         chat_id=update.message.chat_id,
-        text='Enter your wallet address'
+        text='- Enter your ethereum wallet address.\n- MyEtherWallet(MEW) recommended.'
     )
     return "receive_eth_address"
 
