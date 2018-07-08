@@ -79,7 +79,7 @@ def create_table(connect_db):
     conn.close()
 
 
-def add_share_column(connect_db):
+def add_youtube_column(connect_db):
     """
     add share bounty colum
     
@@ -91,7 +91,7 @@ def add_share_column(connect_db):
 
     cursor.execute("""
     ALTER TABLE participants
-    ADD COLUMN IF NOT EXISTS share_link VARCHAR(255)
+    ADD COLUMN IF NOT EXISTS youtube_name VARCHAR(255)
     """)
 
     cursor.close()

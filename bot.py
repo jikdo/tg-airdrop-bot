@@ -33,7 +33,7 @@ from telegram import (
 import shortuuid
 import psycopg2
 
-from db import connect_db, create_table
+from db import connect_db, create_table, add_youtube_column
 
 # log data
 logging.basicConfig(
@@ -47,6 +47,7 @@ with open(r'config.json', 'r') as file:
 
 # create table
 create_table(connect_db)
+add_youtube_column(connect_db)
 
 updater = Updater(os.environ['TG_ACCESS_TOKEN'])
 dispatcher = updater.dispatcher
@@ -243,38 +244,38 @@ def task_list(bot, update):
 
     header_button1 = [
         InlineKeyboardButton(
-                "📢 Join our news channel (7.5 FXP)",
+                "📢 Join our news channel (5 FXP)",
                 url="{}".format(config['social']['telegram_channel']),
                 ),
         ]
 
     header_button2 =[
         InlineKeyboardButton(
-                "👫 Join our community (7.5 FXP)",
+                "👫 Join our community (5 FXP)",
                 url="{}".format(config['social']['telegram_group']),
                 ),
     ]
 
     footer_buttons = [
         InlineKeyboardButton(
-                "🐥 Access Twitter Bounty (7.5 FXP)",
+                "🐥 Twitter Bounty (5 FXP)",
                 callback_data='twitter',
             ),
     ]
 
     footer2_buttons = [
         InlineKeyboardButton(
-                "📘 Access Facebook Bounty (7.5 FXP)",
+                "📘 Facebook Bounty (5 FXP)",
                 callback_data='facebook',
             ),
     ]
 
-    # footer3_buttons = [
-    #     InlineKeyboardButton(
-    #         "💭  Access Share Post Bounty",
-    #         callback_data='share'
-    #     )
-    # ]
+    footer3_buttons = [
+        InlineKeyboardButton(
+            "📺 Youtube Bounty (5 FXP)",
+            callback_data='youtube'
+        )
+    ]
 
     footer4_buttons = [
         InlineKeyboardButton(
@@ -288,6 +289,7 @@ def task_list(bot, update):
        header_button2,
        footer_buttons,
        footer2_buttons,
+       footer3_buttons,
        footer4_buttons,
     ]
 
@@ -397,6 +399,7 @@ def ask_facebook_name(bot, update, user_data=None):
     except:
         pass
 
+
 def receive_facebook_name(bot, update):
     """
     Receive facebook link
@@ -448,6 +451,78 @@ def receive_facebook_name(bot, update):
         return ConversationHandler.END
     except:
         pass
+
+
+def ask_youtube_name(bot, update, user_data=None):
+    """
+    Ask youtube name
+    """
+    print('youtube called')
+    try:
+        bot.send_message(
+            chat_id=update.effective_user.id,
+            text=config['messages']['youtube_task'].format(
+                config['social']['youtube'],
+            ),
+            parse_mode='Markdown',
+            disable_web_page_preview=True,
+        )
+        return "receive_youtube_name"
+    except:
+        print('error thrown')
+
+
+def receive_youtube_name(bot, update):
+    """
+    Receive youtube name
+    """
+    try:
+        conn = connect_db()
+        cursor = conn.cursor()
+
+        telegram_id = update.message.from_user.id
+        youtube_name = update.message.text
+
+        if youtube_name.lower() == "skip":
+            bot.send_message(
+                chat_id=update.message.chat_id,
+                text="Process skipped"
+            )
+            return ConversationHandler.END
+
+        # get gains
+        cursor.execute("""
+        SELECT gains FROM participants WHERE telegram_id=%s
+        """, (telegram_id,))
+        gains = cursor.fetchone()[0]
+
+        # get twitter_username
+        cursor.execute("""
+        SELECT youtube_name FROM participants WHERE telegram_id=%s
+        """, (telegram_id,))
+        old_youtube_name = cursor.fetchone()[0]
+        print(old_youtube_name)
+        if old_youtube_name is None:
+            # update db
+            cursor.execute("""
+            UPDATE participants SET youtube_name=%s, gains=%s WHERE telegram_id=%s
+            """, (youtube_name, gains + config['rewards']['youtube'], telegram_id))
+        else:
+            cursor.execute("""
+            UPDATE participants SET youtube_name=%s WHERE telegram_id=%s
+            """, (youtube_name, telegram_id))
+        cursor.close()
+        conn.commit()
+        conn.close()
+
+        bot.send_message(
+            chat_id=update.message.chat_id,
+            text=config['messages']['done_msg'],
+            disable_web_page_preview=True,
+        )
+        return ConversationHandler.END
+    except psycopg2.Error as e:
+        print(e.pgerror)
 
 
 def list_rules(bot, update):
@@ -634,7 +709,11 @@ reg_convo_handler = ConversationHandler(
         CallbackQueryHandler(
             pattern='share',
             callback=ask_share_link,
-        )
+        ),
+        CallbackQueryHandler(
+            pattern='youtube',
+            callback=ask_youtube_name,
+        ),
         ],
     states={
         'receive_eth_address': [
@@ -646,8 +725,8 @@ reg_convo_handler = ConversationHandler(
         'receive_facebook_name': [
             MessageHandler(Filters.text, receive_facebook_name)
         ],
-        'receive_share_link': [
-            MessageHandler(Filters.text, receive_share_link)
+        'receive_youtube_name': [
+            MessageHandler(Filters.text, receive_youtube_name)
         ]
     },
     fallbacks=[CommandHandler('cancel', cancel)]

@@ -4,8 +4,9 @@
         "done_msg": "- Congratulations!\n- Use Menu to navigate",
         "invite_msg": "Join {} bounty program. Follow {}",
         "fwd_invite_msg": "Send the above message to all your friends to earn {} {} each",
-        "twitter_task": "Follow us on [Twitter]({}) and retweet our recent message. \n And send me your Twitter username starting with '@'",
-        "facebook_task": "Like and Share our [Facebook page]({}) and send me your facebook profile link. Send 'skip' to end process",
+        "twitter_task": "Follow us on [Twitter]({}) and retweet our recent message.\nAnd send me your Twitter username starting with '@'",
+        "facebook_task": "Like and Share our [Facebook page]({}).\nAnd send me your facebook profile link. Send 'skip' to end process",
+        "youtube_task": "Watch our [Youtube]({}) video and subscribe.\nAnd send me your youtube username. Send 'skip' to end process.",
         "share_task": "Post the below message on Facebook or Twitter and send me the link or send 'skip' to end process",
         "share_msg": "", 
         "report_msg": "",
@@ -14,17 +15,19 @@
         "help_msg": "- Navigate with the Menu\n- Complete all tasks to unlock all your tokens"
     },
     "rewards": {
-        "signup": 15,
-        "twitter": 7.5,
-        "facebook": 7.5,
+        "signup": 10,
+        "twitter": 5,
+        "facebook": 5,
+        "youtube": 5,
         "referral": 5,
-        "cap": 3000000
+        "cap": 1500000
     },
     "ticker": "FXP",
     "social": {
         "twitter": "https://twitter.com/fxpayglobal",
         "facebook": "https://www.facebook.com/fxpayglobal",
-        "telegram_group": "https://t.me/fxpglobal",
+        "youtube": "https://youtube.com/watch?v=_30bM4zSLzg",
+        "telegram_group": "https://t.me/fxpglobal1",
         "telegram_channel": "https://t.me/fxpaynews"
     },
     "ICO_name": "FxPay",
