@@ -286,6 +286,7 @@ def task_list(bot, update):
 
     task_list_buttons = [
        header_button1,
+       header_button2,
        footer_buttons,
        footer2_buttons,
        footer3_buttons,
