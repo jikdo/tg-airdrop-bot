@@ -15,7 +15,7 @@
         "help_msg": "- Navigate with the Menu\n- Complete all tasks to unlock all your tokens"
     },
     "rewards": {
-        "signup": 5,
+        "signup": 10,
         "twitter": 5,
         "facebook": 5,
         "youtube": 5,
