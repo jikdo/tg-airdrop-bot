@@ -61,17 +61,39 @@ def create_table(connect_db):
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS participants
     (
-        participant_id SERIAL PRIMARY KEYm
+        participant_id SERIAL PRIMARY KEY,
         date_joined VARCHAR(255) NOT NULL,
         telegram_id INTEGER NOT NULL,
-        telegram_username VARCHAR(255) NOT NULL,
         chat_id INTEGER NOT NULL,
         ref_code VARCHAR(255) NOT NULL,
-        twitter_username VARCHAR(255) NOT NULL,
         eth_address VARCHAR(255) NOT NULL,
-        gains INTEGER NOT NULL
+        telegram_username VARCHAR(255) NOT NULL,
+        twitter_username VARCHAR(255) NOT NULL,
+        facebook_name VARCHAR(255) NOT NULL,
+        gains INTEGER NOT NULL,
+        referred_no INTEGER NOT NULL
     )
     """)
+    cursor.close()
+    conn.commit()
+    conn.close()
+
+
+def add_youtube_column(connect_db):
+    """
+    add share bounty colum
+    
+    params:
+    connect_db - connect db function
+    """
+    conn = connect_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    ALTER TABLE participants
+    ADD COLUMN IF NOT EXISTS youtube_name VARCHAR(255)
+    """)
+
     cursor.close()
     conn.commit()
     conn.close()

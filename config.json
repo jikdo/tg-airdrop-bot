@@ -1,18 +1,36 @@
 {
-    "access_codes": {
-        "access_token": ""
-    },
     "messages": {
-        "start_msg": "",
-        "start2_msg": "",
-        "done_msg": "",
-        "invite_msg": "",
-        "fwd_invite_msg": "",
-        "twitter_task": "",
-        "report_msg": ""
+        "start_msg": "- Welcome to {} bounty program.\n\n- Use the Menu to navigate\n- Complete tasks to unlock tokens.\n- Invite friends and earn more",
+        "done_msg": "- Congratulations!\n- Use Menu to navigate",
+        "invite_msg": "Join {} bounty program. Follow {}",
+        "fwd_invite_msg": "Send the above message to all your friends to earn {} {} each",
+        "twitter_task": "Follow us on [Twitter]({}) and retweet our recent message.\nAnd send me your Twitter username starting with '@'",
+        "facebook_task": "Like and Share our [Facebook page]({}).\nAnd send me your facebook profile link. Send 'skip' to end process",
+        "youtube_task": "Watch our [Youtube]({}) video and subscribe.\nAnd send me your youtube username. Send 'skip' to end process.",
+        "share_task": "Post the below message on Facebook or Twitter and send me the link or send 'skip' to end process",
+        "share_msg": "", 
+        "report_msg": "",
+        "purchase_msg": "- You can purchase {} tokens at {}\n- Now free 100% forex credit cash back",
+        "gains_msg": "You have {} {} from {} referral(s).\n\n Invite your friends to earn more",
+        "help_msg": "- Navigate with the Menu\n- Complete all tasks to unlock all your tokens"
     },
     "rewards": {
-        "signup": 10,
-        "referral": 5
-    }
+        "signup": 0,
+        "twitter": 0,
+        "facebook": 0,
+        "youtube": 0,
+        "referral": 0,
+        "cap": 0
+    },
+    "ticker": "FXP",
+    "social": {
+        "twitter": "https://twitter.com/fxpayglobal",
+        "facebook": "https://www.facebook.com/fxpayglobal",
+        "youtube": "https://youtube.com/watch?v=_30bM4zSLzg",
+        "telegram_group": "https://t.me/fxpayglobal1",
+        "telegram_channel": "https://t.me/fxpaynews"
+    },
+    "ICO_name": "FxPay",
+    "website": "https://fxpay.io",
+    "bot_uname": "fxpaybounty_bot"
 }
