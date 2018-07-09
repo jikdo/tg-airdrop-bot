@@ -15,12 +15,12 @@
         "help_msg": "- Navigate with the Menu\n- Complete all tasks to unlock all your tokens"
     },
     "rewards": {
-        "signup": 10,
-        "twitter": 5,
-        "facebook": 5,
-        "youtube": 5,
-        "referral": 5,
-        "cap": 6000000
+        "signup": 0,
+        "twitter": 0,
+        "facebook": 0,
+        "youtube": 0,
+        "referral": 0,
+        "cap": 0
     },
     "ticker": "FXP",
     "social": {
