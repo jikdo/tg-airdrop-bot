@@ -97,27 +97,6 @@ def create_table(connect_db):
     close_db_connection(conn, cursor)
 
 
-def add_youtube_column(connect_db):
-    """
-    add share bounty colum
-    
-    params:
-    connect_db - connect db function
-    """
-    conn = connect_db()
-    cursor = conn.cursor()
-
-    cursor.execute("""
-    ALTER TABLE participants
-    ADD COLUMN IF NOT EXISTS youtube_name VARCHAR(255)
-    """)
-
-    cursor.close()
-    conn.commit()
-    conn.close()
-
-
-
 def get_user_rewards(connect_db, telegram_id):
     """
     Get rewards of a user
@@ -194,7 +173,129 @@ def is_participant(connect_db, telegram_id):
 
 def get_total_rewards(connect_db):
     """
-    
+    Returns total reward allocated to participants
 
-def add_new_participant(connect_db, **kargs):
-    pass
+    Args:
+        connect_db (func): Connect db function
+
+    Returns:
+        int: Total rewards allocated
+    """
+
+    conn, cursor = connect_db()
+
+    try:
+        cursor.execute("""
+        SELECT
+        COALESCE(SUM(telegram_channel_reward + telegram_group_reward + twitter_reward + facebook_reward, referral_reward), 0)
+        FROM participants
+        """)
+        total = cursor.fetchone()[0]
+        close_db_connection(conn, cursor) 
+        
+        return total
+    except psycopg2.Error as e:
+        print(e.pgerror)
+
+
+def add_new_participant(connect_db, telegram_id, chat_id, telegram_username):
+    """
+    Adds a new participant to the bounty
+
+    Args:
+        connect_db (func): Connect db function
+        telegram_id (int): Telegram ID of user
+        chat_id (int): Telegram Chat ID of bot-user converstation
+    """
+
+    try:
+        conn, cursor = connect_db()
+        cursor.execute("""
+                INSERT INTO
+                participants
+                (date_joined,
+                telegram_id,
+                chat_id,
+                referral_code,
+                wallet_address,
+                telegram_username,
+                twitter_username,
+                facebook_profile_link,
+                telegram_channel_reward,
+                telegram_group_reward,
+                twitter_reward,
+                facebook_reward,
+                referral_reward,
+                referred_no)
+                VALUES
+                (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """, (date.today(),
+                    telegram_id,
+                    chat_id,
+                    shortuuid.uuid(),
+                    'n/a',
+                    telegram_username,
+                    'n/a',
+                    'n/a',
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,))
+    except psycopg2.Error as e:
+        print(e.pgerror)
+
+
+def get_user_referral_reward_and_referred_no(connect_db, referral_code):
+    """
+    Returns the referral_reward and number of people a user has referred
+
+    Args:
+        referral_code (str): Referral code of user
+
+    Returns:
+        tuple: (referral_reward, referred_no)
+    """
+    conn, cursor = connect_db()
+
+    try:
+        cursor.execute("""
+        SELECT referral_reward, referred_no
+        FROM particpants
+        WHERE referral_code=%s
+        """, (referral_code,))
+        results = cursor.fetchone()
+        close_db_connection(conn, cursor)
+        
+        return results
+    except psycopg2.Error as e:
+        print(e.pgerror)
+
+
+def update_user_referral_reward_and_referred_no(connect_db, referral_code, points):
+    """
+    Increases referral reward (by points per referred)
+    and referred number (by 1)
+
+    Args:
+        connect_db (func): Connect DB function
+        referral_code (str): Referral code of user
+        points (int): Amount to reward
+    """
+
+    conn, cursor = connect_db()
+
+    try:
+       cursor.execute("""
+        UPDATE participants SET referral_reward=%s, referred_no=%s WHERE referral_code=%s
+        """, (
+            referral_reward + points,
+            referred_no + 1,
+            referral_code)
+            )
+        conn.commit()
+        close_db_connection(conn, cursor)
+    except psycopg2.Error as e:
+        print(e.pgerror)
+
