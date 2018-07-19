@@ -33,7 +33,15 @@ from telegram import (
 import shortuuid
 import psycopg2
 
-from db import connect_db, create_table, add_youtube_column
+from db import (
+    connect_db,
+    create_table,
+    is_participant,
+    add_new_participant,
+    get_total_rewards,
+    get_user_referral_reward_and_referred_no,
+    update_user_referral_reward_and_referred_no,
+)
 
 # log data
 logging.basicConfig(
@@ -57,38 +65,13 @@ def start(bot, update, args=None):
     """
     Collect eth address from participant for registration
     """
-    conn = connect_db()
-    cursor = conn.cursor()
     telegram_id = update.message.from_user.id
     telegram_username = update.message.from_user.username
+    if telegram_username is None:
+        telgram_username = 'n/a'
     chat_id = update.message.chat_id
 
-    # check db if participant exists
-    cursor.execute("""
-    SELECT telegram_id FROM participants WHERE telegram_id=%s
-    """, (telegram_id,))
-
-    participant = cursor.fetchone()
-
-    # menu keyboard
-    menu_keyboard = [
-        ['/Wallet', '💎 Balance', '💬 Invite'],
-        ['❓ Help', '🔨 Tasks', '👏 Purchase {}'.format(config['ticker'])]
-        ]
-    reply_markup = ReplyKeyboardMarkup(
-        menu_keyboard,
-        resize_keyboard=True,
-        one_time_keyboard=False
-        )
-
-    cursor.execute("""
-    SELECT SUM(gains)
-        FROM participants
-    """)
-    total = cursor.fetchone()[0]
-
-    if total is None:
-        total = 0
+    total = get_total_rewards(connect_db)
 
     if total >= config['rewards']['cap']:
         bot.send_message(
@@ -98,53 +81,20 @@ def start(bot, update, args=None):
         )
         print('airdrop shared ::: ' + str(total))
     else:
-        if not participant:
+        if not is_participant(connect_db, telegram_id):
             # add new participant
-            cursor.execute("""
-            INSERT INTO
-            participants
-            (date_joined,
-            telegram_id,
-            chat_id,
-            ref_code,
-            eth_address,
-            telegram_username,
-            twitter_username,
-            facebook_name,
-            gains,
-            referred_no)
-            VALUES
-            (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """, (date.today(),
-                  telegram_id,
-                  chat_id,
-                  shortuuid.uuid(),
-                  'n/a',
-                  telegram_username,
-                  'n/a',
-                  'n/a',
-                  config['rewards']['signup'],
-                  0))
-            print("new participant")
+            add_new_participant(connect_db, telegram_id, chat_id, telegram_username)
+            print("new participant added")
 
             # award referer
             if args:
-                referral_link = args[0]
-                cursor.execute("""
-                SELECT gains, referred_no from participants WHERE ref_code=%s
-                """, (referral_link,))
-                results = (cursor.fetchone())
-                gains = results[0]
+                referral_code = args[0]
+                results = get_user_referral_reward_and_referred(connect_db, referral_code)
+                referral_reward = results[0]
                 referred_no = results[1]
 
-                cursor.execute("""
-                UPDATE participants SET gains=%s, referred_no=%s WHERE ref_code=%s
-                """, (
-                    gains + config['rewards']['referral'],
-                    referred_no + 1,
-                    referral_link)
-                    )
-
+                update_user_referral_reward_and_referred_no(connect_db, referral_code, config['rewards']['referral'])
+             
             bot.send_message(
                 chat_id=update.message.chat_id,
                 text=config['messages']['start_msg'].format(config['ICO_name']),
