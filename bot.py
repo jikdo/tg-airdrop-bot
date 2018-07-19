@@ -43,6 +43,11 @@ from db import (
     update_user_referral_reward_and_referred_no,
 )
 
+from menu import (
+    menu_markup,
+    menu_relayer
+)
+
 # log data
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -55,7 +60,7 @@ with open(r'config.json', 'r') as file:
 
 # create table
 create_table(connect_db)
-add_youtube_column(connect_db)
+
 
 updater = Updater(os.environ['TG_ACCESS_TOKEN'])
 dispatcher = updater.dispatcher
@@ -72,6 +77,8 @@ def start(bot, update, args=None):
     chat_id = update.message.chat_id
 
     total = get_total_rewards(connect_db)
+    if total is None:
+        total = 0
 
     if total >= config['rewards']['cap']:
         bot.send_message(
@@ -93,41 +100,21 @@ def start(bot, update, args=None):
                 referral_reward = results[0]
                 referred_no = results[1]
 
+                # reward referrer
                 update_user_referral_reward_and_referred_no(connect_db, referral_code, config['rewards']['referral'])
              
             bot.send_message(
                 chat_id=update.message.chat_id,
                 text=config['messages']['start_msg'].format(config['ICO_name']),
                 disable_web_page_preview=True,
-                reply_markup=reply_markup
+                reply_markup=menu_markup
             )
-            cursor.close()
-            conn.commit()
-            conn.close()
         else:
             bot.send_message(
                 chat_id=update.message.chat_id,
                 text="You are already in the campaign",
-                reply_markup=reply_markup
+                reply_markup=menu_markup
                 )
-            cursor.close()
-            conn.commit()
-            conn.close()
-
-
-def menu_relayer(bot, update):
-    option = update.message.text
-
-    if option == '🔨 Tasks':
-        task_list(bot, update)
-    elif option == '💎 Balance':
-        get_gains(bot, update)
-    elif option == '💬 Invite':
-        get_referral_link(bot, update)
-    elif option == '👏 Purchase {}'.format(config['ticker']):
-        purchase(bot, update)
-    elif option == '❓ Help':
-        help_info(bot, update)
 
 
 # def check_airdrop_count(bot, update):
@@ -186,69 +173,6 @@ def receive_eth_address(bot, update):
             parse_mode="Markdown"
         )
         return "receive_eth_address"
-
-
-def task_list(bot, update):
-    """ show tasks to complete """
-    print("called")
-
-    header_button1 = [
-        InlineKeyboardButton(
-                "📢 Join our news channel (5 FXP)",
-                url="{}".format(config['social']['telegram_channel']),
-                ),
-        ]
-
-    header_button2 =[
-        InlineKeyboardButton(
-                "👫 Join our community (5 FXP)",
-                url="{}".format(config['social']['telegram_group']),
-                ),
-    ]
-
-    footer_buttons = [
-        InlineKeyboardButton(
-                "🐥 Twitter Bounty (5 FXP)",
-                callback_data='twitter',
-            ),
-    ]
-
-    footer2_buttons = [
-        InlineKeyboardButton(
-                "📘 Facebook Bounty (5 FXP)",
-                callback_data='facebook',
-            ),
-    ]
-
-    footer3_buttons = [
-        InlineKeyboardButton(
-            "📺 Youtube Bounty (5 FXP)",
-            callback_data='youtube'
-        )
-    ]
-
-    footer4_buttons = [
-        InlineKeyboardButton(
-            "🌟 Join CryptoKnightAirdrops [optional]",
-            url='https://t.me/CryptoKnightAirdrops'
-        )
-    ]
-
-    task_list_buttons = [
-       header_button1,
-       header_button2,
-       footer_buttons,
-       footer2_buttons,
-       footer3_buttons,
-       footer4_buttons,
-    ]
-
-    reply_markup = InlineKeyboardMarkup(task_list_buttons)
-    bot.send_message(
-        chat_id=update.message.chat_id,
-        text="Complete the following tasks",
-        reply_markup=reply_markup
-    )
 
 
 def ask_twitter_username(bot, update):

@@ -1,7 +1,9 @@
 import os
 from urllib.parse import urlparse
+from datetime import date
 
 import psycopg2
+import shortuuid
 
 # DB config
 if os.environ["STAGE"] == "LIVE":
@@ -37,15 +39,16 @@ else:
         print('Connecting to the Postgres db DEV')
         try:
             conn = psycopg2.connect(
-                dbname='',
-                user='',
-                host='',
-                password='',
-                port=''
+                dbname='ak_test_db',
+                user='postgres',
+                host='localhost',
+                password='#AmOakO64$',
+                port='5432'
             )
+            return conn, conn.cursor()
         except psycopg2.Error as e:
             print(e.pgerror)
-        return conn
+       
 
 
 def close_db_connection(conn, cursor):
@@ -71,8 +74,7 @@ def create_table(connect_db):
     Args:
     connect_db - connect db function
     """
-    conn = connect_db()
-    cursor = conn.cursor()
+    conn, cursor = connect_db()
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS participants
     (
@@ -122,7 +124,7 @@ def get_user_rewards(connect_db, telegram_id):
         conn, cursor = connect_db()
 
         cursor.execute("""
-        SELECT telegram_channel, telegram_group, twitter, facebook, referrals)
+        SELECT telegram_channel_reward, telegram_group_reward, twitter_reward, facebook_reward, referral_reward
         FROM participants
         WHERE telegram_id=%s
         """,
@@ -187,10 +189,12 @@ def get_total_rewards(connect_db):
     try:
         cursor.execute("""
         SELECT
-        COALESCE(SUM(telegram_channel_reward + telegram_group_reward + twitter_reward + facebook_reward, referral_reward), 0)
+        SUM( telegram_channel_reward + twitter_reward)
         FROM participants
         """)
+        
         total = cursor.fetchone()[0]
+        print(total)
         close_db_connection(conn, cursor) 
         
         return total
@@ -243,6 +247,8 @@ def add_new_participant(connect_db, telegram_id, chat_id, telegram_username):
                     0,
                     0,
                     0,))
+        conn.commit()
+        close_db_connection(conn, cursor)
     except psycopg2.Error as e:
         print(e.pgerror)
 
@@ -294,8 +300,7 @@ def update_user_referral_reward_and_referred_no(connect_db, referral_code, point
             referred_no + 1,
             referral_code)
             )
-        conn.commit()
-        close_db_connection(conn, cursor)
+       conn.commit()
+       close_db_connection(conn, cursor)
     except psycopg2.Error as e:
         print(e.pgerror)
-

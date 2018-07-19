@@ -8,9 +8,21 @@ This module provides menu elements and
 functions for the bot to execute from the
 menu context
 """
+import json
+
+from telegram import (
+    ReplyKeyboardMarkup,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+)
+
 from db import (
     get_user_rewards
 )
+
+# get config
+with open(r'config.json', 'r') as file:
+    config = json.loads(file.read())
 
 # menu keyboard
 menu_keyboard = [
@@ -18,7 +30,7 @@ menu_keyboard = [
     ['❓ Help', '🔨 Tasks', '👏 Purchase {}'.format(config['ticker'])]
 ]
 
-menu_markeup = ReplyKeyboardMarkup(
+menu_markup = ReplyKeyboardMarkup(
     menu_keyboard,
     resize_keyboard=True,
     one_time_keyboard=False
@@ -93,7 +105,7 @@ def send_task_list(bot, update):
     bot.send_message(
         chat_id=update.message.chat_id,
         text="Complete the following tasks",
-        reply_markup=reply_markup
+        reply_markup=tasks_markup
     )
 
 
@@ -124,11 +136,10 @@ def send_rewards_info(bot, update):
     telegram_id = update.message.from_user.id
 
 
-    try:
-        
+    try: 
        rewards =  get_user_rewards(connect_db, telegram_id)
-
-        if gains:
+       
+       if rewards:
             # get total referred
             cursor.execute("""
             SELECT referred_no FROM participants WHERE telegram_id=%s
@@ -143,9 +154,12 @@ def send_rewards_info(bot, update):
                     referred_no),
                 display_web_page_preview=True,
             )
-            
     except:
         bot.send_message(
             chat_id=update.message.chat_id,
             text='- Your info not available\n- Use /start to register'
         )
+
+
+def reply_unknown_text(bot, update):
+    pass
