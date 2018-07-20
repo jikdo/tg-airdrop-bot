@@ -5,8 +5,26 @@ from datetime import date
 import psycopg2
 import shortuuid
 
-# DB config
-if os.environ["STAGE"] == "LIVE":
+try:
+    from local_db import db_config
+
+    def connect_db():
+        """
+        Connect to Postgres SQL server (DEV)
+        """
+        print('Connecting to the Postgres db DEV')
+        try:
+            conn = psycopg2.connect(
+                dbname= db_config['dbname'],
+                user= db_config['user'],
+                host= db_config['host'],
+                password=db_config['password'],
+                port=db_config['port']
+            )
+            return conn, conn.cursor()
+        except psycopg2.Error as e:
+            print(e.pgerror)
+except ImportError:
     url = urlparse(os.environ['DATABASE_URL'])
     dbname = url.path[1:]
     user = url.username
@@ -28,27 +46,10 @@ if os.environ["STAGE"] == "LIVE":
                 port=port,
             )
             print('Connection to Postgres db successful')
+            return conn, conn.cursor() 
         except psycopg2.Error as e:
             print(e.pgerror)
-        return conn
-else:
-    def connect_db():
-        """
-        Connect to Postgres SQL server (DEV)
-        """
-        print('Connecting to the Postgres db DEV')
-        try:
-            conn = psycopg2.connect(
-                dbname='ak_test_db',
-                user='postgres',
-                host='localhost',
-                password='#AmOakO64$',
-                port='5432'
-            )
-            return conn, conn.cursor()
-        except psycopg2.Error as e:
-            print(e.pgerror)
-       
+              
 
 
 def close_db_connection(conn, cursor):

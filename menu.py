@@ -151,6 +151,6 @@ def send_user_referral_link(bot, update):
 def reply_unknown_text(bot, update):
     """ Replies to unknown menu command """
     bot.send_message(
-        chat_Id=update.message.chat_id,
+        chat_id=update.effective_user.id,
         text="Unknown text. Please use the menu buttons"
     )
