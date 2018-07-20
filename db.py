@@ -365,3 +365,39 @@ def get_user_referral_code(connect_db, telegram_id):
     except psycopg2.Error as e:
         print(e.pgerror)
 
+
+def set_user_task_reward(connect_db, telegram_id, points, task_column=None, task_reward_column=None, entry=None):
+    """
+    Adds reward to user's telegram group pot
+
+    Args:
+        connect_db (func): Connect DB function
+        telegram_id (int): Telegram ID of user
+        task_column (str): Save task entry here
+        task_reward_column (str): Save task points here
+        entry (str): Entry to update database
+        points (int): Points to reward user
+    """
+    print('i was called')
+    try:
+        conn, cursor = connect_db()
+        # update db
+        if entry:
+            cursor.execute("""
+            UPDATE participants
+            SET {}=%s, {}=%s
+            WHERE telegram_id=%s
+            """.format(task_column, task_reward_column),
+            (entry, points, telegram_id))
+        else:
+            cursor.execute("""
+            UPDATE participants
+            SET {}=%s
+            WHERE telegram_id=%s
+            """.format(task_reward_column,),
+            (points, telegram_id))
+        conn.commit()
+        close_db_connection(conn, cursor)
+        print("i was called")
+    except psycopg2.Error as e:
+        print(e.pgerror)
