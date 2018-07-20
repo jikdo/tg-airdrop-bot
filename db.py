@@ -378,7 +378,6 @@ def set_user_task_reward(connect_db, telegram_id, points, task_column=None, task
         entry (str): Entry to update database
         points (int): Points to reward user
     """
-    print('i was called')
     try:
         conn, cursor = connect_db()
         # update db
@@ -398,6 +397,24 @@ def set_user_task_reward(connect_db, telegram_id, points, task_column=None, task
             (points, telegram_id))
         conn.commit()
         close_db_connection(conn, cursor)
-        print("i was called")
     except psycopg2.Error as e:
         print(e.pgerror)
+
+
+def set_user_wallet_address(wallet_address, telegram_id):
+    """ Save user address """
+    try:
+        conn, cursor = connect_db()
+
+        # save wallet address
+        cursor.execute("""
+        UPDATE participants
+        SET wallet_address=%s
+        WHERE telegram_id=%s
+        """, (wallet_address, telegram_id))
+        conn.commit()
+        close_db_connection(conn, cursor)
+    except psycopg2.Error as e:
+        print(e.pgerror)
+
+

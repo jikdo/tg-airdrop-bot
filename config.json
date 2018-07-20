@@ -15,10 +15,10 @@
         "help_msg": "- Navigate with the Menu\n- Complete all tasks to unlock all your tokens"
     },
     "rewards": {
-        "signup": 0,
-        "twitter": 0,
-        "facebook": 0,
-        "youtube": 0,
+        "telegram_group": 30,
+        "telegram_channel": 35,
+        "twitter": 25,
+        "facebook": 20,
         "referral": 0,
         "cap": 100
     },
