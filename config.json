@@ -11,12 +11,13 @@
         "share_msg": "", 
         "report_msg": "",
         "purchase_msg": "- You can purchase {} tokens at {}\n- Now free 100% forex credit cash back",
-        "gains_msg": "You have\n Telegram News - {}\n Telegram Group - {}\nTwitter - {}\nFacebook - {}\nReferral - {}\n You have referred {} people\nTotal rewards - {} {}\n\n Invite your friends to earn more",
-        "help_msg": "- Navigate with the Menu\n- Complete all tasks to unlock all your tokens"
+        "gains_msg": "BALANCE\nYou have:\nTelegram News - {} {ticker}\nTelegram Group - {} {ticker}\nTwitter - {} {ticker}\nFacebook - {} {ticker}\nReferral - {} {ticker}\nYou have referred {} people\n----------------------\nTotal rewards - {} {ticker}\n\n Invite your friends to earn more",
+        "help_msg": "FAQ"
     },
     "rewards": {
         "telegram_group": 30,
         "telegram_channel": 35,
+        "email": 0,
         "twitter": 25,
         "facebook": 20,
         "referral": 100,

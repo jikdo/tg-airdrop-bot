@@ -48,12 +48,6 @@ facebook_button = [
             callback_data='facebook',
         ),
     ]
-
-youtube_button = [
-        InlineKeyboardButton(
-            "📺 Youtube Bounty",
-            callback_data='youtube'
-        )
     ]
 
 task_list_buttons = [
@@ -61,7 +55,6 @@ task_list_buttons = [
         telegram_group_button,
         twitter_button,
         facebook_button,
-        youtube_button,
     ]
 
 tasks_markup = InlineKeyboardMarkup(task_list_buttons)
@@ -169,6 +162,57 @@ def receive_facebook_name(bot, update):
         facebook_name,
         )
     print('facebook done')
+
+    bot.send_message(
+        chat_id=update.message.chat_id,
+        text=config['messages']['done_msg'],
+        disable_web_page_preview=True,
+        )
+    return ConversationHandler.END
+
+
+def ask_email_address(bot, update, user_data=None):
+    """
+    Ask email address
+    """
+    try:
+        bot.send_message(
+            chat_id=update.effective_user.id,
+            text=config['messages']['email_task'].format(
+                config['social']['email'],
+            ),
+            parse_mode='Markdown',
+            disable_web_page_preview=True,
+        )
+        return "receive_facebook_name"
+    except:
+        pass
+
+
+def receive_email_address(bot, update):
+    """
+    Receive email address
+    """
+
+    telegram_id = update.message.from_user.id
+    email_address = update.message.text
+
+    if email_address.lower() == "skip":
+        bot.send_message(
+            chat_id=update.message.chat_id,
+            text="Process skipped"
+        )
+        return ConversationHandler.END
+    print('email')
+    set_user_task_reward(
+        connect_db,
+        telegram_id,
+        config['rewards']['email'],
+        'facebook_profile_link',
+        'facebook_reward',
+        email_address,
+        )
+    print('email done')
 
     bot.send_message(
         chat_id=update.message.chat_id,

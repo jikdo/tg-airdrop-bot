@@ -148,6 +148,7 @@ def add_new_participant(connect_db, telegram_id, chat_id, telegram_username):
                 chat_id,
                 referral_code,
                 wallet_address,
+                email,
                 telegram_username,
                 twitter_username,
                 facebook_profile_link,

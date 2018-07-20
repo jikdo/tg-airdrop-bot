@@ -32,7 +32,7 @@ with open(r'config.json', 'r') as file:
 
 # menu keyboard
 menu_keyboard = [
-    ['/Wallet', '💎 Balance', '💬 Invite'],
+    ['Wallet', '💎 Balance', '💬 Invite'],
     ['❓ Help', '🔨 Tasks', '👏 Purchase {}'.format(config['ticker'])]
 ]
 
@@ -56,13 +56,15 @@ def menu_relayer(bot, update):
         send_purchase_info(bot, update)
     elif option == '❓ Help':
         send_help_info(bot, update)
+    elif optioin == 'Wallet':
+        ask
     else:
         reply_unknown_text(bot, update)
 
 
 def send_task_list(bot, update):
     """ show tasks to complete """
-    print("called")
+    print("task list accessed")
     bot.send_message(
         chat_id=update.message.chat_id,
         text="Complete the following tasks",
@@ -113,7 +115,7 @@ def send_user_rewards_info(bot, update):
                     referrals,
                     referred_no,
                     total,
-                    config['ticker']),
+                    ticker=config['ticker']),
                 display_web_page_preview=True,
             )
     
