@@ -290,9 +290,9 @@ def get_user_referred_no(connect_db, telegram_id):
     Returns:
         int: total number of people referred by user
     """
-    conn, cursor = connect_db()
-
     try:
+        conn, cursor = connect_db()
+
         # get total referred
         cursor.execute("""
         SELECT referred_no
@@ -322,8 +322,6 @@ def update_user_referral_reward_and_referred_no(connect_db, referral_code, point
         points (int): Amount to reward
     """
 
-    conn, cursor = connect_db()
-
     try:
        cursor.execute("""
         UPDATE participants SET referral_reward=%s, referred_no=%s WHERE referral_code=%s
@@ -350,6 +348,7 @@ def get_user_referral_code(connect_db, telegram_id):
         str: Referral code of user
     """
     try:
+        conn, cursor = connect_db()
         cursor.execute("""
         SELECT referral_code
         FROM participants
