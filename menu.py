@@ -17,7 +17,9 @@ from telegram import (
 )
 
 from db import (
-    get_user_rewards
+    connect_db,
+    get_user_rewards,
+    get_user_referred_no,
 )
 
 # get config
@@ -43,7 +45,7 @@ def menu_relayer(bot, update):
     if option == '🔨 Tasks':
         send_task_list(bot, update)
     elif option == '💎 Balance':
-        send_rewards_info(bot, update)
+        send_user_rewards_info(bot, update)
     elif option == '💬 Invite':
         send_referral_link(bot, update)
     elif option == '👏 Purchase {}'.format(config['ticker']):
@@ -129,30 +131,64 @@ def send_purchase_info(bot, update):
     )
 
 
-def send_rewards_info(bot, update):
+def send_user_rewards_info(bot, update):
     """
     Displays reward earned by participant
     """
     telegram_id = update.message.from_user.id
 
 
-    try: 
-       rewards =  get_user_rewards(connect_db, telegram_id)
+
+    telegram_channel, telegram_group, twitter, facebook, referrals, total = get_user_rewards(connect_db, telegram_id)
        
-       if rewards:
-            # get total referred
-            cursor.execute("""
-            SELECT referred_no FROM participants WHERE telegram_id=%s
-            """, (telegram_id,))
-            referred_no = cursor.fetchone()[0]
+       # get total referred
+    referred_no = get_user_referred_no(connect_db, telegram_id)
+
+    bot.send_message(
+                chat_id=update.message.chat_id,
+                text=config['messages']['gains_msg'].format(
+                    telegram_channel,
+                    telegram_group,
+                    twitter,
+                    facebook,
+                    referrals,
+                    referred_no,
+                    total,
+                    config['ticker']),
+                display_web_page_preview=True,
+            )
+    
+
+def send_user_referral_link(bot, update):
+    """
+    Sends user's referral link
+    """
+    conn, cursor = connect_db()
+    telegram_id = update.message.from_user.id
+
+    try:
+        cursor.execute("""
+        SELECT ref_code FROM participants WHERE telegram_id=%s
+        """, (telegram_id, ))
+        ref_code = cursor.fetchone()[0]
+
+        if ref_code:
+            reflink = "https://t.me/{}?start=".format(config['bot_uname']) + ref_code
 
             bot.send_message(
                 chat_id=update.message.chat_id,
-                text=config['messages']['gains_msg'].format(
-                    gains,
+                text=config['messages']['invite_msg'].format(
+                    config['ICO_name'],
+                    reflink
+                    )
+            )
+            bot.send_message(
+                chat_id=update.message.chat_id,
+                text=config['messages']['fwd_invite_msg'].format(
+                    config['rewards']['referral'],
                     config['ticker'],
-                    referred_no),
-                display_web_page_preview=True,
+                ),
+                disable_web_page_preview=True,
             )
     except:
         bot.send_message(
@@ -160,6 +196,10 @@ def send_rewards_info(bot, update):
             text='- Your info not available\n- Use /start to register'
         )
 
-
+        
 def reply_unknown_text(bot, update):
-    pass
+    """ Replies to unknown menu command """
+    bot.send_message(
+        chat_Id=update.message.chat_id,
+        text="Unknown text. Please use the menu buttons"
+    )

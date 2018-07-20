@@ -99,50 +99,6 @@ def create_table(connect_db):
     close_db_connection(conn, cursor)
 
 
-def get_user_rewards(connect_db, telegram_id):
-    """
-    Get rewards of a user
-
-    Args:
-        connect_db (func): connect_db function
-        telegram_id (str): Telegram ID of user
-
-    Returns:
-        tuple: (telegram_channel, telegram_group, twitter, facebook, referrals, total)
-
-        or
-
-        None: if no user reward was found
-
-    Raises:
-        pyscopg2.Error: When there is error with dealing with the database
-    """
-
-    # get rewards
-    try:
-        # connect to database
-        conn, cursor = connect_db()
-
-        cursor.execute("""
-        SELECT telegram_channel_reward, telegram_group_reward, twitter_reward, facebook_reward, referral_reward
-        FROM participants
-        WHERE telegram_id=%s
-        """,
-        (telegram_id,)
-        )
-
-
-        if cursor.fetchone()[0]:
-            telegram_channel, telegram_group, twitter, facebook, referrals = cursor.fetchone()[0]
-            total = telegram_channel + telegram_group + twitter + facebook + referrals
-            
-            close_db_connection(conn, cursor)
-            return (telegram_channel, telegram_group, twitter, facebook, referrals, total)
-        else:
-            close_db_connection(conn, cursor)
-            return None
-    except psycopg2.Error as e:
-        print(e.pgerror)
 
 
 def is_participant(connect_db, telegram_id):
@@ -169,35 +125,6 @@ def is_participant(connect_db, telegram_id):
             return True
         else:
             return False
-    except psycopg2.Error as e:
-        print(e.pgerror)
-
-
-def get_total_rewards(connect_db):
-    """
-    Returns total reward allocated to participants
-
-    Args:
-        connect_db (func): Connect db function
-
-    Returns:
-        int: Total rewards allocated
-    """
-
-    conn, cursor = connect_db()
-
-    try:
-        cursor.execute("""
-        SELECT
-        SUM( telegram_channel_reward + twitter_reward)
-        FROM participants
-        """)
-        
-        total = cursor.fetchone()[0]
-        print(total)
-        close_db_connection(conn, cursor) 
-        
-        return total
     except psycopg2.Error as e:
         print(e.pgerror)
 
@@ -253,6 +180,79 @@ def add_new_participant(connect_db, telegram_id, chat_id, telegram_username):
         print(e.pgerror)
 
 
+# rewards query
+
+def get_total_rewards(connect_db):
+    """
+    Returns total reward allocated to participants
+
+    Args:
+        connect_db (func): Connect db function
+
+    Returns:
+        int: Total rewards allocated
+    """
+
+    conn, cursor = connect_db()
+
+    try:
+        cursor.execute("""
+        SELECT
+        SUM( telegram_channel_reward + twitter_reward)
+        FROM participants
+        """)
+        
+        total = cursor.fetchone()[0]
+        print(total)
+        close_db_connection(conn, cursor) 
+        
+        return total
+    except psycopg2.Error as e:
+        print(e.pgerror)
+
+
+def get_user_rewards(connect_db, telegram_id):
+    """
+    Get rewards of a user
+
+    Args:
+        connect_db (func): connect_db function
+        telegram_id (str): Telegram ID of user
+
+    Returns:
+        tuple: (telegram_channel, telegram_group, twitter, facebook, referrals, total)
+
+        or
+
+        None: if no user reward was found
+
+    Raises:
+        pyscopg2.Error: When there is error with dealing with the database
+    """
+
+    # get rewards
+    try:
+        # connect to database
+        conn, cursor = connect_db()
+
+        cursor.execute("""
+        SELECT telegram_channel_reward, telegram_group_reward, twitter_reward, facebook_reward, referral_reward
+        FROM participants
+        WHERE telegram_id=%s
+        """,
+        (telegram_id,)
+        )
+
+
+        telegram_channel, telegram_group, twitter, facebook, referrals = cursor.fetchone()
+        total = telegram_channel + telegram_group + twitter + facebook + referrals
+            
+        close_db_connection(conn, cursor)
+        return (telegram_channel, telegram_group, twitter, facebook, referrals, total)
+    except psycopg2.Error as e:
+        print(e.pgerror)
+
+
 def get_user_referral_reward_and_referred_no(connect_db, referral_code):
     """
     Returns the referral_reward and number of people a user has referred
@@ -275,6 +275,38 @@ def get_user_referral_reward_and_referred_no(connect_db, referral_code):
         close_db_connection(conn, cursor)
         
         return results
+    except psycopg2.Error as e:
+        print(e.pgerror)
+
+
+def get_user_referred_no(connect_db, telegram_id):
+    """
+    Returns number of people a user has referred
+
+    Args:
+        connect_db (func): Connect DB function
+        telegram_id (int): Telegram ID of user
+
+    Returns:
+        int: total number of people referred by user
+    """
+    conn, cursor = connect_db()
+
+    try:
+        # get total referred
+        cursor.execute("""
+        SELECT referred_no
+        FROM participants
+        WHERE telegram_id=%s
+        """, (telegram_id,))
+        referred_no = cursor.fetchone()[0]
+
+        if referred_no is None:
+            referred_no = 0
+        
+        close_db_connection(conn, cursor)
+        return referred_no
+
     except psycopg2.Error as e:
         print(e.pgerror)
 
@@ -304,3 +336,31 @@ def update_user_referral_reward_and_referred_no(connect_db, referral_code, point
        close_db_connection(conn, cursor)
     except psycopg2.Error as e:
         print(e.pgerror)
+
+
+def get_user_referral_code(connect_db, telegram_id):
+    """
+    Returns the referral code of a user
+
+    Args:
+        connect_db (func): Connect DB function
+        telegram_id (int): Telegram ID of user
+
+    Returns:
+        str: Referral code of user
+    """
+    try:
+        cursor.execute("""
+        SELECT referral_code
+        FROM participants
+        WHERE telegram_id=%s
+        """, (telegram_id,))
+        referral_code = cursor.fetchone()[0]
+
+        if referral_code:
+            return referral_code
+        else:
+            return None
+    except psycopg2.Error as e:
+        print(e.pgerror)
+
