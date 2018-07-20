@@ -99,7 +99,7 @@ def start(bot, update, args=None):
         )
         print('airdrop shared ::: ' + str(total))
     else:
-        if not is_participant(connect_db, telegram_id):
+        if  not is_participant(connect_db, telegram_id):
             # add new participant
             add_new_participant(connect_db, telegram_id, chat_id, telegram_username)
             print("new participant added")
@@ -107,12 +107,13 @@ def start(bot, update, args=None):
             # award referer
             if args:
                 referral_code = args[0]
-                results = get_user_referral_reward_and_referred(connect_db, referral_code)
-                referral_reward = results[0]
-                referred_no = results[1]
+                print(referral_code)
 
                 # reward referrer
-                update_user_referral_reward_and_referred_no(connect_db, referral_code, config['rewards']['referral'])
+                update_user_referral_reward_and_referred_no(
+                    connect_db, referral_code,
+                    config['rewards']['referral'],
+                )
              
             bot.send_message(
                 chat_id=update.message.chat_id,

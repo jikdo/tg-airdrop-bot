@@ -119,13 +119,11 @@ def is_participant(connect_db, telegram_id):
         SELECT * FROM participants WHERE telegram_id=%s
         """,
         (telegram_id,))
+        print(telegram_id)
 
         participant = cursor.fetchone()
-
-        if participant:
-            return True
-        else:
-            return False
+        return participant
+        close_db_connection(conn, cursor)
     except psycopg2.Error as e:
         print(e.pgerror)
 
@@ -269,7 +267,7 @@ def get_user_referral_reward_and_referred_no(connect_db, referral_code):
     try:
         cursor.execute("""
         SELECT referral_reward, referred_no
-        FROM particpants
+        FROM participants
         WHERE referral_code=%s
         """, (referral_code,))
         results = cursor.fetchone()
@@ -321,14 +319,22 @@ def update_user_referral_reward_and_referred_no(connect_db, referral_code, point
         connect_db (func): Connect DB function
         referral_code (str): Referral code of user
         points (int): Amount to reward
+        old_referral_reward (int): Old referral reward
+
     """
 
     try:
+       conn, cursor = connect_db()
+
+       results = get_user_referral_reward_and_referred_no(connect_db, referral_code)
+       old_referral_reward = results[0]
+       old_referred_no = results[1]
+
        cursor.execute("""
         UPDATE participants SET referral_reward=%s, referred_no=%s WHERE referral_code=%s
         """, (
-            referral_reward + points,
-            referred_no + 1,
+            old_referral_reward + points,
+            old_referred_no + 1,
             referral_code)
             )
        conn.commit()

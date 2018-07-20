@@ -19,18 +19,18 @@
         "telegram_channel": 35,
         "twitter": 25,
         "facebook": 20,
-        "referral": 0,
+        "referral": 100,
         "cap": 100
     },
     "ticker": "FXP",
     "social": {
-        "twitter": "https://twitter.com/fxpayglobal",
+        "twitter": "https://twitter.com/airdropking_io",
         "facebook": "https://www.facebook.com/fxpayglobal",
         "youtube": "https://youtube.com/watch?v=_30bM4zSLzg",
         "telegram_group": "https://t.me/fxpayglobal1",
-        "telegram_channel": "https://t.me/fxpaynews"
+        "telegram_channel": "https://t.me/airdropking_io"
     },
     "ICO_name": "FxPay",
-    "website": "https://fxpay.io",
-    "bot_uname": "fxpaybounty_bot"
+    "website": "https://airdropking.io",
+    "bot_uname": "supertestabot"
 }
