@@ -20,6 +20,7 @@ from db import (
     connect_db,
     get_user_rewards,
     get_user_referred_no,
+    get_user_referral_code
 )
 
 # get config
@@ -47,7 +48,7 @@ def menu_relayer(bot, update):
     elif option == '💎 Balance':
         send_user_rewards_info(bot, update)
     elif option == '💬 Invite':
-        send_referral_link(bot, update)
+        send_user_referral_link(bot, update)
     elif option == '👏 Purchase {}'.format(config['ticker']):
         send_purchase_info(bot, update)
     elif option == '❓ Help':
@@ -166,23 +167,19 @@ def send_user_referral_link(bot, update):
     conn, cursor = connect_db()
     telegram_id = update.message.from_user.id
 
-    try:
-        cursor.execute("""
-        SELECT ref_code FROM participants WHERE telegram_id=%s
-        """, (telegram_id, ))
-        ref_code = cursor.fetchone()[0]
+    referral_code = get_user_referral_code(connect_db, telegram_id)
 
-        if ref_code:
-            reflink = "https://t.me/{}?start=".format(config['bot_uname']) + ref_code
+    if referral_code:
+        reflink = "https://t.me/{}?start=".format(config['bot_uname']) + referral_code
 
-            bot.send_message(
+        bot.send_message(
                 chat_id=update.message.chat_id,
                 text=config['messages']['invite_msg'].format(
                     config['ICO_name'],
                     reflink
                     )
             )
-            bot.send_message(
+        bot.send_message(
                 chat_id=update.message.chat_id,
                 text=config['messages']['fwd_invite_msg'].format(
                     config['rewards']['referral'],
@@ -190,13 +187,9 @@ def send_user_referral_link(bot, update):
                 ),
                 disable_web_page_preview=True,
             )
-    except:
-        bot.send_message(
-            chat_id=update.message.chat_id,
-            text='- Your info not available\n- Use /start to register'
-        )
 
-        
+
+
 def reply_unknown_text(bot, update):
     """ Replies to unknown menu command """
     bot.send_message(
