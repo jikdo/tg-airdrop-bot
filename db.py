@@ -358,8 +358,10 @@ def get_user_referral_code(connect_db, telegram_id):
         referral_code = cursor.fetchone()[0]
 
         if referral_code:
+            close_db_connection(conn, cursor)
             return referral_code
         else:
+            close_db_connection(conn, cursor)
             return None
     except psycopg2.Error as e:
         print(e.pgerror)
