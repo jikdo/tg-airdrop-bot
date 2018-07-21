@@ -171,7 +171,8 @@ def receive_facebook_name(bot, update):
     if not match:
         bot.send_message(
             chat_id=update.message.chat_id,
-            text="- Invalid facebook profile link.\n- Use a valid link.\n- You stop by pressing 'skip'"
+            text="- Invalid facebook profile link.\n- Use a valid link eg 'https://facebook.com/name'.\n- You stop by pressing 'skip'",
+            disable_web_page_preview=True,
         )
         return "receive_facebook_name"
     print('facebook')
