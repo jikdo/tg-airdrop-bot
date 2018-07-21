@@ -9,7 +9,7 @@
         "youtube_task": "Watch our [Youtube]({}) video and subscribe.\nAnd send me your youtube username. You stop by pressing 'skip'",
         "email_task": "- Sign up on [SID website]({})\n- Send me your SID email\n- Make sure to verify your email\n- You stop by pressing 'skip'",
         "report_msg": "",
-        "purchase_msg": "- You can purchase {} tokens at {}",
+        "purchase_msg": "- You can purchase {} tokens at {}  after you Register or if you already have a SID account then after you login at https://shareinternetdata.io/members/#/login",
         "gains_msg": "*BALANCE*\n_You have:_\nTelegram News - _{} {ticker}_\nTelegram Group - _{} {ticker}_\nTwitter - {} {ticker}\nFacebook - _{} {ticker}_\nReferral - _{} {ticker}_\nYou have referred _{} people_\n----------------------\nTotal rewards - _{} {ticker}_\n\n *Invite your friends to earn more*",
         "help_msg": "*FAQ*\n- Check our official [FAQ]({})\n\n*Why is there no wallet option?*\n_We will release your internal SID Wallet after the end of the Initial Token Sale (ITO) period and then it is up to you to keep that SID Wallet to trade for internet with other SID users or you may transfer your tokens to your own created Stellar Wallet by then after we release it, if you so wish._\n\n*How does one qualify for the reward?*\n_Don't forget to confirm your email just after creating it otherwise Tokens will not be assigned as it is an automated server process._"
     },
