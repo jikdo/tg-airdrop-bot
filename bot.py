@@ -178,7 +178,7 @@ def cancel(bot, update):
 reg_convo_handler = ConversationHandler(
     entry_points=[
         CommandHandler('start', start, pass_args=True),
-        CommandHandler('Wallet', ask_eth_address),
+        # CommandHandler('Wallet', ask_eth_address),
         CallbackQueryHandler(
             pattern="telegram_channel_reward",
             callback=reward_telegram_channel,
