@@ -109,7 +109,6 @@ def send_user_rewards_info(bot, update):
     bot.send_message(
                 chat_id=update.message.chat_id,
                 text=config['messages']['gains_msg'].format(
-                    telegram_channel,
                     telegram_group,
                     twitter,
                     facebook,
