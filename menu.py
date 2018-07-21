@@ -85,9 +85,9 @@ def send_help_info(bot, update):
 def send_purchase_info(bot, update):
     bot.send_message(
         chat_id=update.message.chat_id,
-        text=config['messages']['signup'].format(
+        text=config['messages']['purchase_msg'].format(
             config['ticker'],
-            config['website'],
+            config['signup'],
         ),
         disable_web_page_preview=True,
     )
