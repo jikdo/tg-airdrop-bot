@@ -6,6 +6,7 @@ This module contains all bounty tasks related
 functions and attributes
 """
 import json
+import re
 
 from telegram import (
     ReplyKeyboardMarkup,
@@ -15,11 +16,22 @@ from telegram import (
 
 from telegram.ext import ConversationHandler
 
-from db import set_user_task_reward, connect_db
+from db import (
+    set_user_task_reward, connect_db,
+    set_user_email_address,
+)
 
 # get config
 with open(r'config.json', 'r') as file:
     config = json.loads(file.read())
+
+
+email_button = [
+    InlineKeyboardButton(
+        "📧 Your Email [required]",
+        callback_data="email",
+    ),
+]
 
 telegram_channel_button = [
     InlineKeyboardButton(
@@ -48,10 +60,10 @@ facebook_button = [
             callback_data='facebook',
         ),
     ]
-    ]
 
 task_list_buttons = [
-        telegram_channel_button,
+        email_button,
+        # telegram_channel_button,
         telegram_group_button,
         twitter_button,
         facebook_button,
@@ -152,6 +164,16 @@ def receive_facebook_name(bot, update):
             text="Process skipped"
         )
         return ConversationHandler.END
+
+    facebook_pattern = r"^http|https}://facebook.com/"
+    match = re.search(facebook_pattern, facebook_name)
+    print(match)
+    if not match:
+        bot.send_message(
+            chat_id=update.message.chat_id,
+            text="- Invalid facebook profile link.\n- Use a valid link.\n- You stop by pressing 'skip'"
+        )
+        return "receive_facebook_name"
     print('facebook')
     set_user_task_reward(
         connect_db,
@@ -171,22 +193,19 @@ def receive_facebook_name(bot, update):
     return ConversationHandler.END
 
 
-def ask_email_address(bot, update, user_data=None):
+def ask_email_address(bot, update):
     """
     Ask email address
     """
-    try:
-        bot.send_message(
+    bot.send_message(
             chat_id=update.effective_user.id,
             text=config['messages']['email_task'].format(
-                config['social']['email'],
-            ),
+            config['signup']),
             parse_mode='Markdown',
             disable_web_page_preview=True,
         )
-        return "receive_facebook_name"
-    except:
-        pass
+    return "receive_email_address"
+    
 
 
 def receive_email_address(bot, update):
@@ -203,15 +222,18 @@ def receive_email_address(bot, update):
             text="Process skipped"
         )
         return ConversationHandler.END
-    print('email')
-    set_user_task_reward(
-        connect_db,
-        telegram_id,
-        config['rewards']['email'],
-        'facebook_profile_link',
-        'facebook_reward',
-        email_address,
+
+    email_pattern = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
+    match = re.search(email_pattern, email_address)
+    print(match)
+    if not match:
+        bot.send_message(
+            chat_id=update.message.chat_id,
+            text="- Invalid email.\n- Use a valid email.\n- You stop by pressing 'skip'"
         )
+        return "receive_email_address"
+    print('email +' + email_address)
+    set_user_email_address(email_address, telegram_id)
     print('email done')
 
     bot.send_message(

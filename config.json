@@ -1,37 +1,37 @@
 {
     "messages": {
-        "start_msg": "- Welcome to {} bounty program.\n\n- Use the Menu to navigate\n- Complete tasks to unlock tokens.\n- Invite friends and earn more",
+        "start_msg": "Welcome to *{}* bounty program.\n\n- Use the Menu to navigate\n- Complete tasks to unlock tokens.\n- Be sure to check out 'Help' section for frequently asked questions\n- Invite friends and earn more",
         "done_msg": "- Congratulations!\n- Use Menu to navigate",
         "invite_msg": "Join {} bounty program. Follow {}",
         "fwd_invite_msg": "Send the above message to all your friends to earn {} {} each",
-        "twitter_task": "Follow us on [Twitter]({}) and retweet our recent message.\nAnd send me your Twitter username starting with '@'",
-        "facebook_task": "Like and Share our [Facebook page]({}).\nAnd send me your facebook profile link. Send 'skip' to end process",
-        "youtube_task": "Watch our [Youtube]({}) video and subscribe.\nAnd send me your youtube username. Send 'skip' to end process.",
-        "share_task": "Post the below message on Facebook or Twitter and send me the link or send 'skip' to end process",
-        "share_msg": "", 
+        "twitter_task": "- Follow us on [Twitter]({}) and retweet our recent tweet.\n- And send me your Twitter username starting with '@'\n- You stop by pressing 'skip'",
+        "facebook_task": "- Like and Share our [Facebook page]({}).\n- And send me your facebook profile link.\n- You stop by pressing 'skip'",
+        "youtube_task": "Watch our [Youtube]({}) video and subscribe.\nAnd send me your youtube username. You stop by pressing 'skip'",
+        "email_task": "- Sign up on [SID website]({})\n- Send me your SID email\n- Make sure to verify your email\n- You stop by pressing 'skip'",
         "report_msg": "",
-        "purchase_msg": "- You can purchase {} tokens at {}\n- Now free 100% forex credit cash back",
-        "gains_msg": "BALANCE\nYou have:\nTelegram News - {} {ticker}\nTelegram Group - {} {ticker}\nTwitter - {} {ticker}\nFacebook - {} {ticker}\nReferral - {} {ticker}\nYou have referred {} people\n----------------------\nTotal rewards - {} {ticker}\n\n Invite your friends to earn more",
-        "help_msg": "FAQ"
+        "purchase_msg": "- You can purchase {} tokens at {}",
+        "gains_msg": "*BALANCE*\n_You have:_\nTelegram News - _{} {ticker}_\nTelegram Group - _{} {ticker}_\nTwitter - {} {ticker}\nFacebook - _{} {ticker}_\nReferral - _{} {ticker}_\nYou have referred _{} people_\n----------------------\nTotal rewards - _{} {ticker}_\n\n *Invite your friends to earn more*",
+        "help_msg": "*FAQ*\n- Check our official [FAQ]({})\n\n*Why is there no wallet option?*\n_We will release your internal SID Wallet after the end of the Initial Token Sale (ITO) period and then it is up to you to keep that SID Wallet to trade for internet with other SID users or you may transfer your tokens to your own created Stellar Wallet by then after we release it, if you so wish._\n\n*How does one qualify for the reward?*\n_Don't forget to confirm your email just after creating it otherwise Tokens will not be assigned as it is an automated server process._"
     },
     "rewards": {
-        "telegram_group": 30,
-        "telegram_channel": 35,
+        "telegram_group": 150,
+        "telegram_channel": 0,
         "email": 0,
-        "twitter": 25,
-        "facebook": 20,
-        "referral": 100,
-        "cap": 100
+        "twitter": 75,
+        "facebook": 75,
+        "referral": 50,
+        "cap": 25000000
     },
-    "ticker": "FXP",
+    "ticker": "SID",
     "social": {
-        "twitter": "https://twitter.com/airdropking_io",
-        "facebook": "https://www.facebook.com/fxpayglobal",
-        "youtube": "https://youtube.com/watch?v=_30bM4zSLzg",
-        "telegram_group": "https://t.me/fxpayglobal1",
-        "telegram_channel": "https://t.me/airdropking_io"
+        "twitter": "https://twitter.com/sid_frinwo",
+        "facebook": "https://www.facebook.com/shareinternetdata",
+        "telegram_group": "https://t.me/SID_English",
+        "telegram_channel": "https://not-available"
     },
-    "ICO_name": "FxPay",
-    "website": "https://airdropking.io",
-    "bot_uname": "supertestabot"
+    "ICO_name": "Share Internet Data",
+    "website": "https://shareinternetdata.io",
+    "signup": "https://shareinternetdata.io/#whitelist",
+    "FAQ": "https://shareinternetdata.io/#faqs",
+    "bot_uname": "sidbounty_bot"
 }

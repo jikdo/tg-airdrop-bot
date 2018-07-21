@@ -85,6 +85,7 @@ def create_table(connect_db):
         chat_id INTEGER NOT NULL,
         referral_code VARCHAR(255) NOT NULL,
         wallet_address VARCHAR(255) NOT NULL,
+        email VARCHAR(355) NOT NULL,
         telegram_username VARCHAR(255) NOT NULL,
         twitter_username VARCHAR(255) NOT NULL,
         facebook_profile_link VARCHAR(355) NOT NULL,
@@ -119,7 +120,6 @@ def is_participant(connect_db, telegram_id):
         SELECT * FROM participants WHERE telegram_id=%s
         """,
         (telegram_id,))
-        print(telegram_id)
 
         participant = cursor.fetchone()
         return participant
@@ -159,11 +159,12 @@ def add_new_participant(connect_db, telegram_id, chat_id, telegram_username):
                 referral_reward,
                 referred_no)
                 VALUES
-                (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """, (date.today(),
                     telegram_id,
                     chat_id,
                     shortuuid.uuid(),
+                    'n/a',
                     'n/a',
                     telegram_username,
                     'n/a',
@@ -177,7 +178,7 @@ def add_new_participant(connect_db, telegram_id, chat_id, telegram_username):
         conn.commit()
         close_db_connection(conn, cursor)
     except psycopg2.Error as e:
-        print(e.pgerror)
+        print(e.pgerror + "adding new participant")
 
 
 # rewards query
@@ -198,12 +199,11 @@ def get_total_rewards(connect_db):
     try:
         cursor.execute("""
         SELECT
-        SUM( telegram_channel_reward + twitter_reward)
+        SUM( telegram_group_reward + telegram_channel_reward + twitter_reward + facebook_reward + referral_reward)
         FROM participants
         """)
         
         total = cursor.fetchone()[0]
-        print(total)
         close_db_connection(conn, cursor) 
         
         return total
@@ -426,3 +426,18 @@ def set_user_wallet_address(wallet_address, telegram_id):
         print(e.pgerror)
 
 
+def set_user_email_address(email_address, telegram_id):
+    """ Save user email address """
+    try:
+        conn, cursor = connect_db()
+
+        # save wallet address
+        cursor.execute("""
+        UPDATE participants
+        SET email=%s
+        WHERE telegram_id=%s
+        """, (email_address, telegram_id))
+        conn.commit()
+        close_db_connection(conn, cursor)
+    except psycopg2.Error as e:
+        print(e.pgerror)

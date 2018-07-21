@@ -50,7 +50,9 @@ from tasks import (
     receive_facebook_name,
     receive_twitter_username,
     reward_telegram_group,
-    reward_telegram_channel
+    reward_telegram_channel,
+    receive_email_address,
+    ask_email_address,
 )
 
 from menu import (
@@ -91,6 +93,7 @@ def start(bot, update, args=None):
     if total is None:
         total = 0
 
+    print('total >>>>>> ' + str(total))
     if total >= config['rewards']['cap']:
         bot.send_message(
             chat_id=update.message.chat_id,
@@ -119,7 +122,8 @@ def start(bot, update, args=None):
                 chat_id=update.message.chat_id,
                 text=config['messages']['start_msg'].format(config['ICO_name']),
                 disable_web_page_preview=True,
-                reply_markup=menu_markup
+                reply_markup=menu_markup,
+                parse_mode="Markdown"
             )
         else:
             bot.send_message(
@@ -191,6 +195,10 @@ reg_convo_handler = ConversationHandler(
             pattern='facebook',
             callback=ask_facebook_name,
             ),
+        CallbackQueryHandler(
+            pattern='email',
+            callback=ask_email_address,
+            ),
         ],
     states={
         'receive_eth_address': [
@@ -201,6 +209,9 @@ reg_convo_handler = ConversationHandler(
             ],
         'receive_facebook_name': [
             MessageHandler(Filters.text, receive_facebook_name)
+        ],
+        'receive_email_address': [
+            MessageHandler(Filters.text, receive_email_address)
         ],
     },
     fallbacks=[CommandHandler('cancel', cancel)]
