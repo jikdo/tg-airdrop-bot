@@ -107,7 +107,10 @@ def send_user_rewards_info(bot, update):
        # get total referred
     referred_no = get_user_referred_no(connect_db, telegram_id)
     app = get_user_task_reward(connect_db, 'wifi_code_reward', telegram_id)
+    if not app:
+        app = 0
     total += int(app)
+
     bot.send_message(
                 chat_id=update.message.chat_id,
                 text=config['messages']['gains_msg'].format(
