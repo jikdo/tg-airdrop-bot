@@ -8,7 +8,7 @@
         "facebook_task": "- Like and Share our [Facebook page]({}).\n- And send me your facebook profile link.\n- You stop by pressing 'skip'",
         "youtube_task": "Watch our [Youtube]({}) video and subscribe.\nAnd send me your youtube username. You stop by pressing 'skip'",
         "email_task": "- Sign up on [SID website]({})\n- Send me your SID email\n- Make sure to verify your email\n- You stop by pressing 'skip'",
-        "wifi_task": "- Download the SID app for [Android]({}) or [IOS]({})\n - Send me of the wifi password from the SID app",
+        "wifi_task": "- Download the SID app for [Android]({}) or [IOS]({})\n- Add a valid WIFI Password for your nearest WIFI inside the SID app\n- And send me the WiFi name (SSID) for which you added the working password",
         "report_msg": "",
         "purchase_msg": "- You can purchase {} tokens at {}  after you Register\n\n- If you already have a SID account then after you login at https://shareinternetdata.io/members/#/login",
         "gains_msg": "*BALANCE*\n_You have:_\nTelegram Group - _{} {ticker}_\nTwitter - {} {ticker}\nFacebook - _{} {ticker}_\nApp - _{} {ticker}_\nReferral - _{} {ticker}_\nYou have referred _{} people_\n----------------------\nTotal rewards - _{} {ticker}_\n\n *Invite your friends to earn more*",
