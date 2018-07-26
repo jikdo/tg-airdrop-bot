@@ -61,12 +61,19 @@ facebook_button = [
         ),
     ]
 
+wifi_button = [
+        InlineKeyboardButton(
+            "⬇️ Download app ",
+            callback_data='wifi',
+        ),
+    ]
+
 task_list_buttons = [
         email_button,
         # telegram_channel_button,
         telegram_group_button,
+        wifi_button,
         twitter_button,
-        facebook_button,
     ]
 
 tasks_markup = InlineKeyboardMarkup(task_list_buttons)
@@ -236,6 +243,60 @@ def receive_email_address(bot, update):
     print('email +' + email_address)
     set_user_email_address(email_address, telegram_id)
     print('email done')
+
+    bot.send_message(
+        chat_id=update.message.chat_id,
+        text=config['messages']['done_msg'],
+        disable_web_page_preview=True,
+        )
+    return ConversationHandler.END
+
+
+def ask_wifi_code(bot, update, user_data=None):
+    """
+    Ask wifi code
+    """
+
+    try:
+        bot.send_message(
+            chat_id=update.effective_user.id,
+            text=config['messages']['wifi_task'].format(
+                config['social']['playstore'],
+                config['social']['applestore'],
+            ),
+            parse_mode='Markdown',
+            disable_web_page_preview=True,
+        )
+        return "receive_wifi_code"
+    except:
+        pass
+
+
+def receive_wifi_code(bot, update):
+    """
+    Receive wifi code
+    """
+
+    telegram_id = update.message.from_user.id
+    wifi_code = update.message.text
+
+    if wifi_code.lower() == "skip":
+        bot.send_message(
+            chat_id=update.message.chat_id,
+            text="Process skipped"
+        )
+        return ConversationHandler.END
+
+    print('wifi_code')
+    set_user_task_reward(
+        connect_db,
+        telegram_id,
+        config['rewards']['wifi_code'],
+        'wifi_code',
+        'wifi_code_reward',
+        wifi_code,
+        )
+    print('wifi code done')
 
     bot.send_message(
         chat_id=update.message.chat_id,

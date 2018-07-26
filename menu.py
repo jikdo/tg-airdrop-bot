@@ -20,7 +20,8 @@ from db import (
     connect_db,
     get_user_rewards,
     get_user_referred_no,
-    get_user_referral_code
+    get_user_referral_code,
+    get_user_task_reward,
 )
 from tasks import (
     tasks_markup,
@@ -105,13 +106,15 @@ def send_user_rewards_info(bot, update):
        
        # get total referred
     referred_no = get_user_referred_no(connect_db, telegram_id)
-
+    app = get_user_task_reward(connect_db, 'wifi_code_reward', telegram_id)
+    total += int(app)
     bot.send_message(
                 chat_id=update.message.chat_id,
                 text=config['messages']['gains_msg'].format(
                     telegram_group,
                     twitter,
                     facebook,
+                    app,
                     referrals,
                     referred_no,
                     total,

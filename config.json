@@ -8,9 +8,10 @@
         "facebook_task": "- Like and Share our [Facebook page]({}).\n- And send me your facebook profile link.\n- You stop by pressing 'skip'",
         "youtube_task": "Watch our [Youtube]({}) video and subscribe.\nAnd send me your youtube username. You stop by pressing 'skip'",
         "email_task": "- Sign up on [SID website]({})\n- Send me your SID email\n- Make sure to verify your email\n- You stop by pressing 'skip'",
+        "wifi_task": "- Download the SID app for [Android]({}) or [IOS]({})\n - Send me of the wifi password from the SID app",
         "report_msg": "",
         "purchase_msg": "- You can purchase {} tokens at {}  after you Register\n\n- If you already have a SID account then after you login at https://shareinternetdata.io/members/#/login",
-        "gains_msg": "*BALANCE*\n_You have:_\nTelegram Group - _{} {ticker}_\nTwitter - {} {ticker}\nFacebook - _{} {ticker}_\nReferral - _{} {ticker}_\nYou have referred _{} people_\n----------------------\nTotal rewards - _{} {ticker}_\n\n *Invite your friends to earn more*",
+        "gains_msg": "*BALANCE*\n_You have:_\nTelegram Group - _{} {ticker}_\nTwitter - {} {ticker}\nFacebook - _{} {ticker}_\nApp - _{} {ticker}_\nReferral - _{} {ticker}_\nYou have referred _{} people_\n----------------------\nTotal rewards - _{} {ticker}_\n\n *Invite your friends to earn more*",
         "help_msg": "*FAQ*\n- Check our official [FAQ]({})\n\n*Why is there no wallet option?*\n_We will release your internal SID Wallet after the end of the Initial Token Sale (ITO) period and then it is up to you to keep that SID Wallet to trade for internet with other SID users or you may transfer your tokens to your own created Stellar Wallet by then after we release it, if you so wish._\n\n*How does one qualify for the reward?*\n_Don't forget to confirm your email just after creating it otherwise Tokens will not be assigned as it is an automated server process._"
     },
     "rewards": {
@@ -19,6 +20,7 @@
         "email": 0,
         "twitter": 75,
         "facebook": 75,
+        "wifi_code": 75,
         "referral": 50,
         "cap": 25000000
     },
@@ -27,7 +29,9 @@
         "twitter": "https://twitter.com/sid_frinwo",
         "facebook": "https://www.facebook.com/shareinternetdata",
         "telegram_group": "https://t.me/SID_English",
-        "telegram_channel": "https://not-available"
+        "telegram_channel": "https://not-available",
+        "playstore": "https://play.google.com/store/apps/details?id=im.allo&referrer=utm_source%3Dshareinternetdata%26utm_medium%3Dbanner%2520%26utm_content%3Dheader%26utm_campaign%3Ddownload%2520web%2520",
+        "applestore": "https://itunes.apple.com/app/apple-store/id1337085729?mt=8"
     },
     "ICO_name": "Share Internet Data",
     "website": "https://shareinternetdata.io",

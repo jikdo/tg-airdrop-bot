@@ -36,6 +36,7 @@ import psycopg2
 from db import (
     connect_db,
     create_table,
+    add_task_column,
     is_participant,
     add_new_participant,
     get_total_rewards,
@@ -53,6 +54,8 @@ from tasks import (
     reward_telegram_channel,
     receive_email_address,
     ask_email_address,
+    ask_wifi_code,
+    receive_wifi_code,
 )
 
 from menu import (
@@ -73,6 +76,7 @@ with open(r'config.json', 'r') as file:
 
 # create table
 create_table(connect_db)
+add_task_column(connect_db, 'wifi_code', 'wifi_code_reward')
 
 
 updater = Updater(os.environ['TG_ACCESS_TOKEN'])
@@ -199,6 +203,10 @@ reg_convo_handler = ConversationHandler(
             pattern='email',
             callback=ask_email_address,
             ),
+        CallbackQueryHandler(
+            pattern='wifi',
+            callback=ask_wifi_code,
+            ),
         ],
     states={
         'receive_eth_address': [
@@ -212,6 +220,9 @@ reg_convo_handler = ConversationHandler(
         ],
         'receive_email_address': [
             MessageHandler(Filters.text, receive_email_address)
+        ],
+        'receive_wifi_code': [
+            MessageHandler(Filters.text, receive_wifi_code)
         ],
     },
     fallbacks=[CommandHandler('cancel', cancel)]

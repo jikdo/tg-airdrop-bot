@@ -101,6 +101,23 @@ def create_table(connect_db):
     close_db_connection(conn, cursor)
 
 
+def add_task_column(connect_db, entry_column, reward_column):
+    """
+    Adds new task column to database if no such columns exists
+
+    Args:
+        connect_db (obj): Connection function
+        entry_column (str): Entry column for task eg. task_name
+        reward_column (str): Reward column
+    """
+    conn, cursor = connect_db()
+    cursor.execute("""
+    ALTER TABLE participants
+    ADD COLUMN IF NOT EXISTS {} VARCHAR(255),
+    ADD COLUMN IF NOT EXISTS {} VARCHAR(255)
+    """.format(entry_column, reward_column))
+    conn.commit()
+    close_db_connection(conn, cursor)
 
 
 def is_participant(connect_db, telegram_id):
@@ -252,6 +269,19 @@ def get_user_rewards(connect_db, telegram_id):
     except psycopg2.Error as e:
         print(e.pgerror)
 
+
+def get_user_task_reward(connect_db, reward_column, telegram_id):
+    conn, cursor = connect_db()
+    cursor.execute("""
+    SELECT {}
+    FROM participants
+    WHERE telegram_id=%s
+    """.format(reward_column),
+    (telegram_id,))
+
+    reward = cursor.fetchone()[0]
+    close_db_connection(conn, cursor)
+    return reward
 
 def get_user_referral_reward_and_referred_no(connect_db, referral_code):
     """
