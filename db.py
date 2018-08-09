@@ -77,9 +77,9 @@ def create_table(connect_db):
     """
     conn, cursor = connect_db()
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS participants
+    CREATE TABLE IF NOT EXISTS users
     (
-        participant_id SERIAL PRIMARY KEY,
+        user_id SERIAL PRIMARY KEY,
         date_joined VARCHAR(255) NOT NULL,
         telegram_id INTEGER NOT NULL,
         chat_id INTEGER NOT NULL,
@@ -94,7 +94,8 @@ def create_table(connect_db):
         twitter_reward INTEGER NOT NULL,
         facebook_reward INTEGER NOT NULL,
         referral_reward INTEGER NOT NULL,
-        referred_no INTEGER NOT NULL
+        referrer_telegram_id INTEGER NOT NULL,
+        is_human BOOLEAN NOT NULL,
     )
     """)
     conn.commit()
@@ -112,7 +113,7 @@ def add_task_column(connect_db, entry_column, reward_column):
     """
     conn, cursor = connect_db()
     cursor.execute("""
-    ALTER TABLE participants
+    ALTER TABLE users
     ADD COLUMN IF NOT EXISTS {} VARCHAR(255),
     ADD COLUMN IF NOT EXISTS {} VARCHAR(255)
     """.format(entry_column, reward_column))
@@ -120,34 +121,34 @@ def add_task_column(connect_db, entry_column, reward_column):
     close_db_connection(conn, cursor)
 
 
-def is_participant(connect_db, telegram_id):
+def is_user(connect_db, telegram_id):
     """
-    Checks if user is already a participant
+    Checks if user is already a user
 
     Args:
-        telegram_id (int): Telegram ID of participant
+        telegram_id (int): Telegram ID of user
 
     Returns:
-        bool: Returns True if user is a participant else False
+        bool: Returns True if user is a user else False
     """
 
     try:
         conn, cursor = connect_db()
         cursor.execute("""
-        SELECT * FROM participants WHERE telegram_id=%s
+        SELECT * FROM users WHERE telegram_id=%s
         """,
         (telegram_id,))
 
-        participant = cursor.fetchone()
-        return participant
+        user = cursor.fetchone()
+        return user
         close_db_connection(conn, cursor)
     except psycopg2.Error as e:
         print(e.pgerror)
 
 
-def add_new_participant(connect_db, telegram_id, chat_id, telegram_username):
+def add_new_user(connect_db, telegram_id, chat_id, telegram_username):
     """
-    Adds a new participant to the bounty
+    Adds a new user to the bounty
 
     Args:
         connect_db (func): Connect db function
@@ -159,7 +160,7 @@ def add_new_participant(connect_db, telegram_id, chat_id, telegram_username):
         conn, cursor = connect_db()
         cursor.execute("""
                 INSERT INTO
-                participants
+                users
                 (date_joined,
                 telegram_id,
                 chat_id,
@@ -195,14 +196,14 @@ def add_new_participant(connect_db, telegram_id, chat_id, telegram_username):
         conn.commit()
         close_db_connection(conn, cursor)
     except psycopg2.Error as e:
-        print(e.pgerror + "adding new participant")
+        print(e.pgerror + "adding new user")
 
 
 # rewards query
 
 def get_total_rewards(connect_db):
     """
-    Returns total reward allocated to participants
+    Returns total reward allocated to users
 
     Args:
         connect_db (func): Connect db function
@@ -217,7 +218,7 @@ def get_total_rewards(connect_db):
         cursor.execute("""
         SELECT
         SUM( telegram_group_reward + telegram_channel_reward + twitter_reward + facebook_reward + referral_reward)
-        FROM participants
+        FROM users
         """)
         
         total = cursor.fetchone()[0]
@@ -254,7 +255,7 @@ def get_user_rewards(connect_db, telegram_id):
 
         cursor.execute("""
         SELECT telegram_channel_reward, telegram_group_reward, twitter_reward, facebook_reward, referral_reward
-        FROM participants
+        FROM users
         WHERE telegram_id=%s
         """,
         (telegram_id,)
@@ -274,7 +275,7 @@ def get_user_task_reward(connect_db, reward_column, telegram_id):
     conn, cursor = connect_db()
     cursor.execute("""
     SELECT {}
-    FROM participants
+    FROM users
     WHERE telegram_id=%s
     """.format(reward_column),
     (telegram_id,))
@@ -298,7 +299,7 @@ def get_user_referral_reward_and_referred_no(connect_db, referral_code):
     try:
         cursor.execute("""
         SELECT referral_reward, referred_no
-        FROM participants
+        FROM users
         WHERE referral_code=%s
         """, (referral_code,))
         results = cursor.fetchone()
@@ -326,7 +327,7 @@ def get_user_referred_no(connect_db, telegram_id):
         # get total referred
         cursor.execute("""
         SELECT referred_no
-        FROM participants
+        FROM users
         WHERE telegram_id=%s
         """, (telegram_id,))
         referred_no = cursor.fetchone()[0]
@@ -362,7 +363,7 @@ def update_user_referral_reward_and_referred_no(connect_db, referral_code, point
        old_referred_no = results[1]
 
        cursor.execute("""
-        UPDATE participants SET referral_reward=%s, referred_no=%s WHERE referral_code=%s
+        UPDATE users SET referral_reward=%s, referred_no=%s WHERE referral_code=%s
         """, (
             old_referral_reward + points,
             old_referred_no + 1,
@@ -389,7 +390,7 @@ def get_user_referral_code(connect_db, telegram_id):
         conn, cursor = connect_db()
         cursor.execute("""
         SELECT referral_code
-        FROM participants
+        FROM users
         WHERE telegram_id=%s
         """, (telegram_id,))
         referral_code = cursor.fetchone()[0]
@@ -421,14 +422,14 @@ def set_user_task_reward(connect_db, telegram_id, points, task_column=None, task
         # update db
         if entry:
             cursor.execute("""
-            UPDATE participants
+            UPDATE users
             SET {}=%s, {}=%s
             WHERE telegram_id=%s
             """.format(task_column, task_reward_column),
             (entry, points, telegram_id))
         else:
             cursor.execute("""
-            UPDATE participants
+            UPDATE users
             SET {}=%s
             WHERE telegram_id=%s
             """.format(task_reward_column,),
@@ -446,7 +447,7 @@ def set_user_wallet_address(wallet_address, telegram_id):
 
         # save wallet address
         cursor.execute("""
-        UPDATE participants
+        UPDATE users
         SET wallet_address=%s
         WHERE telegram_id=%s
         """, (wallet_address, telegram_id))
@@ -463,7 +464,7 @@ def set_user_email_address(email_address, telegram_id):
 
         # save wallet address
         cursor.execute("""
-        UPDATE participants
+        UPDATE users
         SET email=%s
         WHERE telegram_id=%s
         """, (email_address, telegram_id))
