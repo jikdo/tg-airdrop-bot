@@ -37,8 +37,8 @@ from db import (
     connect_db,
     create_table,
     add_task_column,
-    is_participant,
-    add_new_participant,
+    is_user,
+    add_new_user,
     get_total_rewards,
     get_user_referral_reward_and_referred_no,
     update_user_referral_reward_and_referred_no,
@@ -54,8 +54,6 @@ from tasks import (
     reward_telegram_channel,
     receive_email_address,
     ask_email_address,
-    ask_wifi_code,
-    receive_wifi_code,
 )
 
 from menu import (
@@ -74,18 +72,13 @@ logging.basicConfig(
 with open(r'config.json', 'r') as file:
     config = json.loads(file.read())
 
-# create table
-create_table(connect_db)
-add_task_column(connect_db, 'wifi_code', 'wifi_code_reward')
-
-
 updater = Updater(os.environ['TG_ACCESS_TOKEN'])
 dispatcher = updater.dispatcher
 
 
 def start(bot, update, args=None):
     """
-    Collect eth address from participant for registration
+    Collect eth address from user for registration
     """
     telegram_id = update.message.from_user.id
     telegram_username = update.message.from_user.username
@@ -106,10 +99,10 @@ def start(bot, update, args=None):
         )
         print('airdrop shared ::: ' + str(total))
     else:
-        if  not is_participant(connect_db, telegram_id):
-            # add new participant
-            add_new_participant(connect_db, telegram_id, chat_id, telegram_username)
-            print("new participant added")
+        if  not is_user(connect_db, telegram_id):
+            # add new user
+            add_new_user(connect_db, telegram_id, chat_id, telegram_username)
+            print("new user added")
 
             # award referer
             if args:
@@ -182,7 +175,7 @@ def cancel(bot, update):
 reg_convo_handler = ConversationHandler(
     entry_points=[
         CommandHandler('start', start, pass_args=True),
-        # CommandHandler('Wallet', ask_eth_address),
+        CommandHandler('Wallet', ask_eth_address),
         CallbackQueryHandler(
             pattern="telegram_channel_reward",
             callback=reward_telegram_channel,
@@ -203,10 +196,6 @@ reg_convo_handler = ConversationHandler(
             pattern='email',
             callback=ask_email_address,
             ),
-        CallbackQueryHandler(
-            pattern='wifi',
-            callback=ask_wifi_code,
-            ),
         ],
     states={
         'receive_eth_address': [
@@ -220,9 +209,6 @@ reg_convo_handler = ConversationHandler(
         ],
         'receive_email_address': [
             MessageHandler(Filters.text, receive_email_address)
-        ],
-        'receive_wifi_code': [
-            MessageHandler(Filters.text, receive_wifi_code)
         ],
     },
     fallbacks=[CommandHandler('cancel', cancel)]

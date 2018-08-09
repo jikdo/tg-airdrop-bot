@@ -33,7 +33,7 @@ with open(r'config.json', 'r') as file:
 
 # menu keyboard
 menu_keyboard = [
-    ['💎 Balance', '💬 Invite'],
+    ['/Wallet', '💎 Balance', '💬 Invite'],
     ['❓ Help', '🔨 Tasks', '👏 Purchase {}'.format(config['ticker'])]
 ]
 
