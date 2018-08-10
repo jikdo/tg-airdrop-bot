@@ -41,7 +41,7 @@ from db import (
     add_new_user,
     get_total_rewards,
     get_user_referral_reward_and_referred_no,
-    update_user_referral_reward_and_referred_no,
+    update_referredby_code,
     set_user_wallet_address,
 )
 
@@ -75,15 +75,15 @@ with open(r'config.json', 'r') as file:
 updater = Updater(os.environ['TG_ACCESS_TOKEN'])
 dispatcher = updater.dispatcher
 
+# create users table
+create_table(connect_db)
 
 def start(bot, update, args=None):
-    """
-    Collect eth address from user for registration
-    """
+    "Register user"
     telegram_id = update.message.from_user.id
     telegram_username = update.message.from_user.username
     if telegram_username is None:
-        telgram_username = 'n/a'
+        telegram_username = 'n/a'
     chat_id = update.message.chat_id
 
     total = get_total_rewards(connect_db)
@@ -106,14 +106,11 @@ def start(bot, update, args=None):
 
             # award referer
             if args:
-                referral_code = args[0]
-                print(referral_code)
+                referredby_code = args[0]
+                print(referredby_code)
 
                 # reward referrer
-                update_user_referral_reward_and_referred_no(
-                    connect_db, referral_code,
-                    config['rewards']['referral'],
-                )
+                update_referredby_code(connect_db, referredby_code, telegram_id)
              
             bot.send_message(
                 chat_id=update.message.chat_id,
