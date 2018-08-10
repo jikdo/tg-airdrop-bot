@@ -75,31 +75,35 @@ def create_table(connect_db):
     Args:
     connect_db - connect db function
     """
-    conn, cursor = connect_db()
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS users
-    (
-        user_id SERIAL PRIMARY KEY,
-        date_joined VARCHAR(255) NOT NULL,
-        telegram_id INTEGER NOT NULL,
-        chat_id INTEGER NOT NULL,
-        referral_code VARCHAR(255) NOT NULL,
-        wallet_address VARCHAR(255) NOT NULL,
-        email VARCHAR(355) NOT NULL,
-        telegram_username VARCHAR(255) NOT NULL,
-        twitter_username VARCHAR(255) NOT NULL,
-        facebook_profile_link VARCHAR(355) NOT NULL,
-        telegram_channel_reward INTEGER NOT NULL,
-        telegram_group_reward INTEGER NOT NULL,
-        twitter_reward INTEGER NOT NULL,
-        facebook_reward INTEGER NOT NULL,
-        referral_reward INTEGER NOT NULL,
-        referrer_telegram_id INTEGER NOT NULL,
-        is_human BOOLEAN NOT NULL,
-    )
-    """)
-    conn.commit()
-    close_db_connection(conn, cursor)
+    try:
+        conn, cursor = connect_db()
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users
+        (
+            user_id SERIAL PRIMARY KEY,
+            date_joined VARCHAR(255) NOT NULL,
+            telegram_id INTEGER NOT NULL,
+            chat_id INTEGER NOT NULL,
+            referral_code VARCHAR(255) NOT NULL,
+            wallet_address VARCHAR(255) NOT NULL,
+            email VARCHAR(355) NOT NULL,
+            telegram_username VARCHAR(255) NOT NULL,
+            twitter_username VARCHAR(255) NOT NULL,
+            facebook_profile_link VARCHAR(355) NOT NULL,
+            telegram_channel_reward INTEGER NOT NULL,
+            telegram_group_reward INTEGER NOT NULL,
+            twitter_reward INTEGER NOT NULL,
+            facebook_reward INTEGER NOT NULL,
+            referral_reward INTEGER NOT NULL,
+            referred_no INTEGER NOT NULL,
+            referred_by VARCHAR(255) NOT NULL,
+            is_human BOOLEAN NOT NULL
+        )
+        """)
+        conn.commit()
+        close_db_connection(conn, cursor)
+    except psycopg2.Error as e:
+        print(e.pgerror)
 
 
 def add_task_column(connect_db, entry_column, reward_column):
@@ -175,9 +179,11 @@ def add_new_user(connect_db, telegram_id, chat_id, telegram_username):
                 twitter_reward,
                 facebook_reward,
                 referral_reward,
-                referred_no)
+                referred_no,
+                referred_by,
+                is_human)
                 VALUES
-                (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """, (date.today(),
                     telegram_id,
                     chat_id,
@@ -192,7 +198,9 @@ def add_new_user(connect_db, telegram_id, chat_id, telegram_username):
                     0,
                     0,
                     0,
-                    0,))
+                    0,
+                    'n/a',
+                    False))
         conn.commit()
         close_db_connection(conn, cursor)
     except psycopg2.Error as e:
@@ -338,6 +346,28 @@ def get_user_referred_no(connect_db, telegram_id):
         close_db_connection(conn, cursor)
         return referred_no
 
+    except psycopg2.Error as e:
+        print(e.pgerror)
+
+def update_referredby_code(connect_db, referredby_code, telegram_id):
+    """
+    Update referral code to referrer
+
+    Args:
+        connect_db (func): Connect DB function
+        referredby_code (str): Code of referrer of user
+        telegram_id (int): Telegram ID of user
+    """
+    try:
+        conn, cursor = connect_db()
+        cursor.execute("""
+        UPDATE users SET referred_by=%s
+        WHERE telegram_id=%s
+        """,
+        (referredby_code, telegram_id))
+
+        conn.commit()
+        close_db_connection(conn, cursor)
     except psycopg2.Error as e:
         print(e.pgerror)
 
