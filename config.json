@@ -8,7 +8,7 @@
         "facebook_task": "- Like and Share our [Facebook page]({}).\n- And send me your facebook profile link.\n- You stop by pressing 'skip'",
         "report_msg": "",
         "purchase_msg": "- You can purchase {} tokens at {}  after you Register\n\n- If you already have a SID account then after you login at https://shareinternetdata.io/members/#/login",
-        "gains_msg": "*BALANCE*\n_You have:_\nTelegram Channel - _{} {ticker}_\nTelegram Group - _{} {ticker}_\nTwitter - {} {ticker}\nFacebook - _{} {ticker}_\nApp - _{} {ticker}_\nReferral - _{} {ticker}_\nYou have referred _{} people_\n----------------------\nTotal rewards - _{} {ticker}_\n\n *Invite your friends to earn more*",
+        "gains_msg": "*BALANCE*\n_You have:_\nTelegram Channel - _{} {ticker}_\nTelegram Group - _{} {ticker}_\nTwitter - {} {ticker}\nFacebook - _{} {ticker}_\nReferral - _{} {ticker}_\nYou have referred _{} people_\n----------------------\nTotal rewards - _{} {ticker}_\n\n *Invite your friends to earn more*",
         "help_msg": "*FAQ comes here*"
     },
     "rewards": {
