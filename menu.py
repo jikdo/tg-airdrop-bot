@@ -105,19 +105,15 @@ def send_user_rewards_info(bot, update):
     telegram_channel, telegram_group, twitter, facebook, referrals, total = get_user_rewards(connect_db, telegram_id)
        
        # get total referred
-    referred_no = get_user_referred_no(connect_db, telegram_id)
-    app = get_user_task_reward(connect_db, 'wifi_code_reward', telegram_id)
-    if not app:
-        app = 0
-    total += int(app)
+    referred_no = get_user_referred_no(telegram_id)
 
     bot.send_message(
                 chat_id=update.message.chat_id,
                 text=config['messages']['gains_msg'].format(
+                    telegram_channel,
                     telegram_group,
                     twitter,
                     facebook,
-                    app,
                     referrals,
                     referred_no,
                     total,
@@ -154,7 +150,6 @@ def send_user_referral_link(bot, update):
                 ),
                 disable_web_page_preview=True,
             )
-
 
 
 def reply_unknown_text(bot, update):
