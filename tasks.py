@@ -18,12 +18,12 @@ from telegram import (
 from telegram.ext import ConversationHandler
 
 from db import (
-    set_user_task_reward, connect_db,
+    set_user_task_reward,
     set_user_email_address,
     set_verification_answer,
     get_verification_answer,
     get_referredby_code,
-    update_user_referral_reward_and_referred_no,
+    set_user_referral_reward_and_referred_no,
     is_validated,
     validate_user,
 )
@@ -126,7 +126,7 @@ def receive_twitter_username(bot, update):
         return "receive_twitter_username"
 
     set_user_task_reward(
-        connect_db, telegram_id,
+        telegram_id,
         config['rewards']['twitter'],
         'twitter_username',
         'twitter_reward',
@@ -191,7 +191,6 @@ def receive_facebook_name(bot, update):
         return "receive_facebook_name"
     print('facebook')
     set_user_task_reward(
-        connect_db,
         telegram_id,
         config['rewards']['facebook'],
         'facebook_profile_link',
@@ -261,7 +260,7 @@ def receive_email_address(bot, update):
 def reward_telegram_group(bot, update):
     """ reward for joining telegram group """
     set_user_task_reward(
-        connect_db, update.effective_user.id,
+        update.effective_user.id,
         config['rewards']['telegram_group'],
         task_reward_column="telegram_group_reward"
     )
@@ -277,7 +276,7 @@ def reward_telegram_group(bot, update):
 def reward_telegram_channel(bot, update):
     """ reward for joining telegram channel """
     set_user_task_reward(
-        connect_db, update.effective_user.id,
+        update.effective_user.id,
         config['rewards']['telegram_channel'],
         task_reward_column="telegram_channel_reward"
     )
@@ -292,14 +291,14 @@ def reward_telegram_channel(bot, update):
 
 def ask_verification_question(bot, update):
     """ Ask user maths problem """
-        
+
     def generate_equation():
         """
         Generates addition math problem with answer
 
         Args:
             -
-            
+
         Returns:
             tuple: (number1, number2, total)
             """
@@ -343,12 +342,13 @@ def receive_verification_answer(bot, update):
         bot.send_message(
             chat_id=update.message.chat_id,
             text='Correct answer. You have been verified'
-            )
+        )
         # validate user
         validate_user(telegram_id)
 
         # update referral if any
         referredby = get_referredby_code(telegram_id)
         if referredby:
-            update_user_referral_reward_and_referred_no(referredby, config['rewards']['referral'])
+            set_user_referral_reward_and_referred_no(
+            referredby, config['rewards']['referral'])
         return ConversationHandler.END

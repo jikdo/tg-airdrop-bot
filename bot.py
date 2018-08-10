@@ -34,14 +34,13 @@ import shortuuid
 import psycopg2
 
 from db import (
-    connect_db,
     create_table,
     add_task_column,
     is_user,
     add_new_user,
     get_total_rewards,
     get_user_referral_reward_and_referred_no,
-    update_referredby_code,
+    set_referredby_code,
     set_user_wallet_address,
 )
 
@@ -79,7 +78,7 @@ updater = Updater(os.environ['TG_ACCESS_TOKEN'])
 dispatcher = updater.dispatcher
 
 # create users table
-create_table(connect_db)
+create_table()
 
 def start(bot, update, args=None):
     "Register user"
@@ -89,7 +88,7 @@ def start(bot, update, args=None):
         telegram_username = 'n/a'
     chat_id = update.message.chat_id
 
-    total = get_total_rewards(connect_db)
+    total = get_total_rewards()
     if total is None:
         total = 0
 
@@ -102,18 +101,17 @@ def start(bot, update, args=None):
         )
         print('airdrop shared ::: ' + str(total))
     else:
-        if  not is_user(connect_db, telegram_id):
+        if  not is_user(telegram_id):
             # add new user
-            add_new_user(connect_db, telegram_id, chat_id, telegram_username)
+            add_new_user(telegram_id, chat_id, telegram_username)
             print("new user added")
 
             # award referer
             if args:
                 referredby_code = args[0]
-                print(referredby_code)
+                print('new user referred by >> ' +  referredby_code)
 
-                # reward referrer
-                update_referredby_code(connect_db, referredby_code, telegram_id)
+                set_referredby_code(referredby_code, telegram_id)
              
             bot.send_message(
                 chat_id=update.message.chat_id,
@@ -130,13 +128,11 @@ def start(bot, update, args=None):
                 )
 
 
-# def check_airdrop_count(bot, update):
-
 def ask_eth_address(bot, update):
     """ ask eth address """
     bot.send_message(
         chat_id=update.message.chat_id,
-        text='- Enter your ethereum wallet address.\n- MyEtherWallet(MEW) recommended.'
+        text='- Enter your wallet address.'
     )
     return "receive_eth_address"
 

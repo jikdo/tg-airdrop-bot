@@ -17,7 +17,6 @@ from telegram import (
 )
 
 from db import (
-    connect_db,
     get_user_rewards,
     get_user_referred_no,
     get_user_referral_code,
@@ -102,7 +101,7 @@ def send_user_rewards_info(bot, update):
 
 
 
-    telegram_channel, telegram_group, twitter, facebook, referrals, total = get_user_rewards(connect_db, telegram_id)
+    telegram_channel, telegram_group, twitter, facebook, referrals, total = get_user_rewards(telegram_id)
        
        # get total referred
     referred_no = get_user_referred_no(telegram_id)
@@ -127,10 +126,9 @@ def send_user_referral_link(bot, update):
     """
     Sends user's referral link
     """
-    conn, cursor = connect_db()
     telegram_id = update.message.from_user.id
 
-    referral_code = get_user_referral_code(connect_db, telegram_id)
+    referral_code = get_user_referral_code(telegram_id)
 
     if referral_code:
         reflink = "https://t.me/{}?start=".format(config['bot_username']) + referral_code

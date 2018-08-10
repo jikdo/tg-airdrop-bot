@@ -68,12 +68,9 @@ def close_db_connection(conn, cursor):
 
 
 # Create bounty table
-def create_table(connect_db):
+def create_table():
     """
     Create sql table to host bounty information
-
-    Args:
-    connect_db - connect db function
     """
     try:
         conn, cursor = connect_db()
@@ -107,7 +104,7 @@ def create_table(connect_db):
         print(e.pgerror)
 
 
-def add_task_column(connect_db, entry_column, reward_column):
+def add_task_column(entry_column, reward_column):
     """
     Adds new task column to database if no such columns exists
 
@@ -126,7 +123,7 @@ def add_task_column(connect_db, entry_column, reward_column):
     close_db_connection(conn, cursor)
 
 
-def is_user(connect_db, telegram_id):
+def is_user(telegram_id):
     """
     Checks if user is already a user
 
@@ -145,18 +142,17 @@ def is_user(connect_db, telegram_id):
         (telegram_id,))
 
         user = cursor.fetchone()
-        return user
         close_db_connection(conn, cursor)
+        return user
     except psycopg2.Error as e:
         print(e.pgerror)
 
 
-def add_new_user(connect_db, telegram_id, chat_id, telegram_username):
+def add_new_user(telegram_id, chat_id, telegram_username):
     """
     Adds a new user to the bounty
 
     Args:
-        connect_db (func): Connect db function
         telegram_id (int): Telegram ID of user
         chat_id (int): Telegram Chat ID of bot-user converstation
     """
@@ -212,12 +208,12 @@ def add_new_user(connect_db, telegram_id, chat_id, telegram_username):
 
 # rewards query
 
-def get_total_rewards(connect_db):
+def get_total_rewards():
     """
     Returns total reward allocated to users
 
     Args:
-        connect_db (func): Connect db function
+        -
 
     Returns:
         int: Total rewards allocated
@@ -240,12 +236,11 @@ def get_total_rewards(connect_db):
         print(e.pgerror)
 
 
-def get_user_rewards(connect_db, telegram_id):
+def get_user_rewards( telegram_id):
     """
     Get rewards of a user
 
-    Args:
-        connect_db (func): connect_db function
+    Args:n
         telegram_id (str): Telegram ID of user
 
     Returns:
@@ -272,7 +267,6 @@ def get_user_rewards(connect_db, telegram_id):
         (telegram_id,)
         )
 
-
         telegram_channel, telegram_group, twitter, facebook, referrals = cursor.fetchone()
         total = telegram_channel + telegram_group + twitter + facebook + referrals
             
@@ -282,7 +276,7 @@ def get_user_rewards(connect_db, telegram_id):
         print(e.pgerror)
 
 
-def get_user_task_reward(connect_db, reward_column, telegram_id):
+def get_user_task_reward(reward_column, telegram_id):
     conn, cursor = connect_db()
     cursor.execute("""
     SELECT {}
@@ -295,7 +289,7 @@ def get_user_task_reward(connect_db, reward_column, telegram_id):
     close_db_connection(conn, cursor)
     return reward
 
-def get_user_referral_reward_and_referred_no(connect_db, referral_code):
+def get_user_referral_reward_and_referred_no(referral_code):
     """
     Returns the referral_reward and number of people a user has referred
 
@@ -326,7 +320,6 @@ def get_user_referred_no(telegram_id):
     Returns number of people a user has referred
 
     Args:
-        connect_db (func): Connect DB function
         telegram_id (int): Telegram ID of user
 
     Returns:
@@ -352,12 +345,11 @@ def get_user_referred_no(telegram_id):
     except psycopg2.Error as e:
         print(e.pgerror)
 
-def update_referredby_code(connect_db, referredby_code, telegram_id):
+def set_referredby_code(referredby_code, telegram_id):
     """
     Update referral code to referrer
 
     Args:
-        connect_db (func): Connect DB function
         referredby_code (str): Code of referrer of user
         telegram_id (int): Telegram ID of user
     """
@@ -393,20 +385,19 @@ def get_referredby_code(telegram_id):
         """,
         (telegram_id,))
         referredby_code = cursor.fetchone()[0]
-        
+        close_db_connection(conn, cursor)
         return referredby_code
     except psycopg2.Error as e:
         print(e.pgerror + ' at line 390 in db.py')
         
 
 
-def update_user_referral_reward_and_referred_no(referral_code, points):
+def set_user_referral_reward_and_referred_no(referral_code, points):
     """
     Increases referral reward (by points per referred)
     and referred number (by 1)
 
     Args:
-        connect_db (func): Connect DB function
         referral_code (str): Referral code of user
         points (int): Amount to reward
         old_referral_reward (int): Old referral reward
@@ -416,7 +407,7 @@ def update_user_referral_reward_and_referred_no(referral_code, points):
     try:
        conn, cursor = connect_db()
 
-       results = get_user_referral_reward_and_referred_no(connect_db, referral_code)
+       results = get_user_referral_reward_and_referred_no(referral_code)
        if not results:
            old_referral_reward = 0
            old_referred_no = 0
@@ -437,12 +428,11 @@ def update_user_referral_reward_and_referred_no(referral_code, points):
         print(e.pgerror)
 
 
-def get_user_referral_code(connect_db, telegram_id):
+def get_user_referral_code(telegram_id):
     """
     Returns the referral code of a user
 
     Args:
-        connect_db (func): Connect DB function
         telegram_id (int): Telegram ID of user
 
     Returns:
@@ -467,12 +457,11 @@ def get_user_referral_code(connect_db, telegram_id):
         print(e.pgerror)
 
 
-def set_user_task_reward(connect_db, telegram_id, points, task_column=None, task_reward_column=None, entry=None):
+def set_user_task_reward(telegram_id, points, task_column=None, task_reward_column=None, entry=None):
     """
     Adds reward to user's telegram group pot
 
     Args:
-        connect_db (func): Connect DB function
         telegram_id (int): Telegram ID of user
         task_column (str): Save task entry here
         task_reward_column (str): Save task points here
