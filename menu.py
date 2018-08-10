@@ -137,7 +137,7 @@ def send_user_referral_link(bot, update):
     referral_code = get_user_referral_code(connect_db, telegram_id)
 
     if referral_code:
-        reflink = "https://t.me/{}?start=".format(config['bot_uname']) + referral_code
+        reflink = "https://t.me/{}?start=".format(config['bot_username']) + referral_code
 
         bot.send_message(
                 chat_id=update.message.chat_id,
