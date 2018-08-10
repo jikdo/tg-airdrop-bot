@@ -97,7 +97,8 @@ def create_table(connect_db):
             referral_reward INTEGER NOT NULL,
             referred_no INTEGER NOT NULL,
             referred_by VARCHAR(255) NOT NULL,
-            is_human BOOLEAN NOT NULL
+            is_human BOOLEAN NOT NULL,
+            verification_answer INT NOT NULL
         )
         """)
         conn.commit()
@@ -181,9 +182,10 @@ def add_new_user(connect_db, telegram_id, chat_id, telegram_username):
                 referral_reward,
                 referred_no,
                 referred_by,
-                is_human)
+                is_human,
+                verification_answer)
                 VALUES
-                (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """, (date.today(),
                     telegram_id,
                     chat_id,
@@ -200,7 +202,8 @@ def add_new_user(connect_db, telegram_id, chat_id, telegram_username):
                     0,
                     0,
                     'n/a',
-                    False))
+                    False,
+                    0))
         conn.commit()
         close_db_connection(conn, cursor)
     except psycopg2.Error as e:
@@ -318,7 +321,7 @@ def get_user_referral_reward_and_referred_no(connect_db, referral_code):
         print(e.pgerror)
 
 
-def get_user_referred_no(connect_db, telegram_id):
+def get_user_referred_no(telegram_id):
     """
     Returns number of people a user has referred
 
@@ -371,8 +374,33 @@ def update_referredby_code(connect_db, referredby_code, telegram_id):
     except psycopg2.Error as e:
         print(e.pgerror)
 
+def get_referredby_code(telegram_id):
+    """
+    Get referrer of the user
 
-def update_user_referral_reward_and_referred_no(connect_db, referral_code, points):
+    Args:
+        telegram_id  (int): Telegram ID of user
+    
+    Returns:
+        str: Referral code of referrer
+    """
+    try:
+        conn, cursor = connect_db()
+        cursor.execute("""
+        SELECT referred_by
+        FROM users
+        WHERE telegram_id=%s
+        """,
+        (telegram_id,))
+        referredby_code = cursor.fetchone()[0]
+        
+        return referredby_code
+    except psycopg2.Error as e:
+        print(e.pgerror + ' at line 390 in db.py')
+        
+
+
+def update_user_referral_reward_and_referred_no(referral_code, points):
     """
     Increases referral reward (by points per referred)
     and referred number (by 1)
@@ -389,8 +417,12 @@ def update_user_referral_reward_and_referred_no(connect_db, referral_code, point
        conn, cursor = connect_db()
 
        results = get_user_referral_reward_and_referred_no(connect_db, referral_code)
-       old_referral_reward = results[0]
-       old_referred_no = results[1]
+       if not results:
+           old_referral_reward = 0
+           old_referred_no = 0
+       else:
+            old_referral_reward = results[0]
+            old_referred_no = results[1]
 
        cursor.execute("""
         UPDATE users SET referral_reward=%s, referred_no=%s WHERE referral_code=%s
@@ -502,3 +534,105 @@ def set_user_email_address(email_address, telegram_id):
         close_db_connection(conn, cursor)
     except psycopg2.Error as e:
         print(e.pgerror)
+
+
+def set_verification_answer(answer, telegram_id):
+    """
+    Save current answer
+
+    Args:
+        answer (int): Verification answer
+        telegram (int): Telegram ID of user
+
+    Returns:
+        -
+    """
+    try:
+        conn, cursor = connect_db()
+
+        # save answer
+        cursor.execute("""
+        UPDATE users
+        SET verification_answer=%s
+        WHERE telegram_id=%s
+        """,
+        (answer, telegram_id))
+        conn.commit()
+        close_db_connection(conn, cursor)
+    except psycopg2.Error as e:
+        print(e.pgerror + '\n line 526') 
+
+
+def get_verification_answer(telegram_id):
+    """
+    Get current answer
+
+    Args:
+        telegram_id (int): Telegram ID of user
+
+    Returns:
+        int: Verificatin answer
+    """
+    try:
+        conn, cursor = connect_db()
+        cursor.execute("""
+        SELECT verification_answer
+        FROM users
+        WHERE telegram_id=%s
+        """,
+        (telegram_id,))
+        answer = cursor.fetchone()[0]
+        close_db_connection(conn, cursor)
+        return answer    
+    except psycopg2.Error as e:
+        print(e.pgerror)
+
+
+def is_validated(telegram_id):
+    """
+    Get verification status of user
+
+    Args:
+        telegram_id (int): Telegram ID of user
+    
+    Returns:
+        bool: Returns True or False
+    """
+    try:
+        conn, cursor = connect_db()
+        cursor.execute("""
+        SELECT is_human
+        FROM users
+        WHERE telegram_id=%s
+        """,
+        (telegram_id,))
+        is_human = cursor.fetchone()[0]
+        close_db_connection(conn, cursor)
+        
+        return is_human
+    except psycopg2.Error as e:
+        print(e.pgerror + '\non line 600 in db.py')
+
+
+def validate_user(telegram_id):
+    """
+    Validate user if user passes test
+
+    Args:
+        telegram_id (int): Telegram ID of user
+
+    Returns:
+        -
+    """
+    try:
+        conn, cursor = connect_db()
+        cursor.execute("""
+        UPDATE users
+        SET is_human=%s
+        WHERE telegram_id=%s
+        """,
+        (True, telegram_id))
+        conn.commit()
+        close_db_connection(conn, cursor)
+    except psycopg2.Error as e:
+        print(e.pgerror + 'at line 623 in db.py')
