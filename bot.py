@@ -54,13 +54,16 @@ from tasks import (
     reward_telegram_channel,
     receive_email_address,
     ask_email_address,
+    ask_verification_question,
+    receive_verification_answer,
+    set_user_task_reward
 )
 
 from menu import (
     menu_markup,
     menu_relayer
 )
-from db import set_user_task_reward
+
 
 # log data
 logging.basicConfig(
@@ -193,6 +196,10 @@ reg_convo_handler = ConversationHandler(
             pattern='email',
             callback=ask_email_address,
             ),
+        CallbackQueryHandler(
+            pattern='verification',
+            callback=ask_verification_question,
+            ),
         ],
     states={
         'receive_eth_address': [
@@ -206,6 +213,9 @@ reg_convo_handler = ConversationHandler(
         ],
         'receive_email_address': [
             MessageHandler(Filters.text, receive_email_address)
+        ],
+        'receive_verification_answer': [
+            MessageHandler(Filters.text, receive_verification_answer)
         ],
     },
     fallbacks=[CommandHandler('cancel', cancel)]
