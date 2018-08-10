@@ -7,6 +7,7 @@ functions and attributes
 """
 import json
 import re
+from random import randrange
 
 from telegram import (
     ReplyKeyboardMarkup,
@@ -19,12 +20,25 @@ from telegram.ext import ConversationHandler
 from db import (
     set_user_task_reward, connect_db,
     set_user_email_address,
+    set_verification_answer,
+    get_verification_answer,
+    get_referredby_code,
+    update_user_referral_reward_and_referred_no,
+    is_validated,
+    validate_user,
 )
 
 # get config
 with open(r'config.json', 'r') as file:
     config = json.loads(file.read())
 
+
+verify_button = [
+    InlineKeyboardButton(
+        " Are You Human? [required]",
+        callback_data='verification'
+    )
+]
 
 email_button = [
     InlineKeyboardButton(
@@ -61,19 +75,12 @@ facebook_button = [
     ),
 ]
 
-wifi_button = [
-    InlineKeyboardButton(
-        "⬇️ Download app ",
-        callback_data='wifi',
-    ),
-]
-
 task_list_buttons = [
-    email_button,
-    # telegram_channel_button,
+    verify_button,
+    telegram_channel_button,
     telegram_group_button,
-    wifi_button,
     twitter_button,
+    facebook_button,
 ]
 
 tasks_markup = InlineKeyboardMarkup(task_list_buttons)
@@ -135,7 +142,6 @@ def receive_twitter_username(bot, update):
         parse_mode='Markdown',
         disable_web_page_preview=True,
     )
-    # return 'receive_facebook_link'
     return ConversationHandler.END
 
 
@@ -282,3 +288,67 @@ def reward_telegram_channel(bot, update):
         disable_web_page_preview=True,
         parse_mode="Markdown"
     )
+
+
+def ask_verification_question(bot, update):
+    """ Ask user maths problem """
+        
+    def generate_equation():
+        """
+        Generates addition math problem with answer
+
+        Args:
+            -
+            
+        Returns:
+            tuple: (number1, number2, total)
+            """
+        x = randrange(1000)
+        y = randrange(1000)
+        total = x + y
+
+        return (x, y, total)
+
+    if not is_validated(update.effective_user.id):
+        number1, number2, total = generate_equation()
+        set_verification_answer(total, update.effective_user.id)
+        bot.send_message(
+            chat_id=update.effective_user.id,
+            text="What is {} + {} ?".format(number1, number2)
+        )
+        return "receive_verification_answer"
+    else:
+        bot.send_message(
+            chat_id=update.effective_user.id,
+            text="You have been verified"
+        )
+        return ConversationHandler.END
+
+
+def receive_verification_answer(bot, update):
+    """
+    Validate user and award referral to referrer
+    """
+    telegram_id = update.message.from_user.id
+    try:
+        user_answer = int(update.message.text)
+    except ValueError:
+        bot.send_message(
+            chat_id=update.message.chat_id,
+            text='Wrong answer. Press button and try again'
+        )
+        return ConversationHandler.END
+    right_answer = get_verification_answer(telegram_id)
+    if right_answer == user_answer:
+        bot.send_message(
+            chat_id=update.message.chat_id,
+            text='Correct answer. You have been verified'
+            )
+        # validate user
+        validate_user(telegram_id)
+
+        # update referral if any
+        referredby = get_referredby_code(telegram_id)
+        if referredby:
+            update_user_referral_reward_and_referred_no(referredby, config['rewards']['referral'])
+        return ConversationHandler.END
