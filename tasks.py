@@ -359,3 +359,9 @@ def receive_verification_answer(bot, update):
                 set_user_referral_reward_and_referred_no(
                     referredby, config['rewards']['referral'])
         return ConversationHandler.END
+    else:
+        bot.send_message(
+            chat_id=update.message.chat_id,
+            text='Wrong answer. Press button and try again'
+        )
+        return ConversationHandler.END
