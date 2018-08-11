@@ -14,9 +14,9 @@
     },
     "rewards": {
         "telegram_group": 3.75,
-        "telegram_channel": 3.75,
-        "twitter": 3.75,
-        "facebook": 3.75,
+        "telegram_channel": 4,
+        "twitter": 4,
+        "facebook": 4,
         "referral": 5,
         "cap": 2000000
     },
