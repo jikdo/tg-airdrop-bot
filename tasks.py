@@ -336,7 +336,7 @@ def receive_verification_answer(bot, update):
     except ValueError:
         bot.send_message(
             chat_id=update.message.chat_id,
-            text='Wrong answer. Press button and try again'
+            text='Wrong answer. Press "Are You Human" button and try again'
         )
         return ConversationHandler.END
     right_answer = get_verification_answer(telegram_id)
@@ -362,6 +362,6 @@ def receive_verification_answer(bot, update):
     else:
         bot.send_message(
             chat_id=update.message.chat_id,
-            text='Wrong answer. Press Are "You Human" button and try again'
+            text='Wrong answer. Press "Are You Human" button and try again'
         )
         return ConversationHandler.END
