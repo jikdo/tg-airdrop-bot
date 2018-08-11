@@ -78,6 +78,7 @@ facebook_button = [
 
 task_list_buttons = [
     verify_button,
+    email_button,
     telegram_channel_button,
     telegram_group_button,
     twitter_button,

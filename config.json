@@ -4,33 +4,33 @@
         "done_msg": "- Congratulations!\n- Use Menu to navigate",
         "invite_msg": "Join {} bounty program. Follow {}",
         "fwd_invite_msg": "Send the above message to all your friends to earn {} {} each",
-        "twitter_task": "- Follow us on [Twitter]({}) and retweet our recent tweet.\n- And send me your Twitter username starting with '@'\n- You stop by pressing 'skip'",
-        "facebook_task": "- Like and Share our [Facebook page]({}).\n- And send me your facebook profile link.\n- You stop by pressing 'skip'",
+        "twitter_task": "- Follow us on [Twitter]({}) and retweet our recent tweet.\n- And send me your Twitter username starting with '@'\n- You stop by typing 'skip'",
+        "facebook_task": "- Like and Share our [Facebook page]({}).\n- And send me your facebook profile link.\n- You stop by typing 'skip'",
+        "email_task": "- Sign up at [InterBlockchain Group Exchange]({})\n- Send me the email you used to register\n- You stop by typing 'skip'",
         "report_msg": "",
-        "purchase_msg": "- You can purchase {} tokens at {}  after you Register\n\n- If you already have a SID account then after you login at https://shareinternetdata.io/members/#/login",
-        "gains_msg": "*BALANCE*\n_You have:_\nTelegram Channel - _{} {ticker}_\nTelegram Group - _{} {ticker}_\nTwitter - {} {ticker}\nFacebook - _{} {ticker}_\nReferral - _{} {ticker}_\nYou have referred _{} people_\n----------------------\nTotal rewards - _{} {ticker}_\n\n *Invite your friends to earn more*",
-        "help_msg": "*FAQ comes here*"
+        "purchase_msg": "- You can purchase {} tokens at {}  after you Register",
+        "gains_msg": "*BALANCE*\n_You have:_\nTelegram Channel - _{} {ticker}_\nTelegram Group - _{} {ticker}_\nTwitter - {} {ticker}\nFacebook - _{} {ticker}_\nReferral - _{} {ticker}_\nYou have referred _{} verified people_\n----------------------\nTotal rewards - _{} {ticker}_\n\n *Invite your friends to earn more*",
+        "help_msg": "*Notice*\n- Only verified users count\n- Make sure to verify and ask you referrals to verify too\n\n*FAQ*\n- What is this project about?\n Watch [Video]({}) or read [Whitepaper]({})"
     },
     "rewards": {
-        "telegram_group": 20,
-        "telegram_channel": 30,
-        "email": 40,
-        "twitter": 50,
-        "facebook": 60,
-        "referral": 70,
-        "cap": 1000
+        "telegram_group": 3.75,
+        "telegram_channel": 3.75,
+        "twitter": 3.75,
+        "facebook": 3.75,
+        "referral": 5,
+        "cap": 2000000
     },
-    "ticker": "ICO",
+    "ticker": "IGB",
     "social": {
-        "twitter": "https://twitter.com/*",
-        "facebook": "https://www.facebook.com/*",
-        "telegram_group": "https://t.me/*",
-        "telegram_channel": "https://t.me/*"
+        "twitter": "https://twitter.com/Ibgico",
+        "facebook": "https://www.facebook.com/ibgico/",
+        "telegram_group": "https://t.me/IBGXOFFICIAL",
+        "telegram_channel": "https://t.me/IBGXForum"
     },
-    "ICO_name": "The ICO",
-    "website": "https://ico.io",
-    "signup": "https://ico.io/signup",
-    "FAQ": "https://ico/faqs",
-    "whitepaper": "https://wpaper.io",
-    "bot_username": "supertestabot"
+    "ICO_name": "InterBlockchain Group Exchange",
+    "website": "http://www.ibg.io/homepage2.php",
+    "signup": "http://www.ibg.io/register.php",
+    "FAQ": "http://www.ibg.io/homepage2.php#video",
+    "whitepaper": "http://www.ibg.io/whitePaper.php",
+    "bot_username": "ibgbounty_bot"
 }
