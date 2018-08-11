@@ -26,6 +26,7 @@ from db import (
     set_user_referral_reward_and_referred_no,
     is_validated,
     validate_user,
+    get_total_rewards,
 )
 
 # get config
@@ -349,6 +350,11 @@ def receive_verification_answer(bot, update):
         # update referral if any
         referredby = get_referredby_code(telegram_id)
         if referredby:
-            set_user_referral_reward_and_referred_no(
-            referredby, config['rewards']['referral'])
+            total = get_total_rewards()
+            if total is None:
+                total = 0
+
+            if total < config['rewards']['cap']:
+                set_user_referral_reward_and_referred_no(
+                    referredby, config['rewards']['referral'])
         return ConversationHandler.END
