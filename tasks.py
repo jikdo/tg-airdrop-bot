@@ -279,13 +279,13 @@ def reward_telegram_channel(bot, update):
     """ reward for joining telegram channel """
     set_user_task_reward(
         update.effective_user.id,
-        config['social']['telegram_channel'],
+        config['rewards']['telegram_channel'],
         task_reward_column="telegram_channel_reward"
     )
     bot.send_message(
         chat_id=update.effective_user.id,
         text="Join our [Telegram News Channel]({})".format(
-            config['social']['telegram_group']),
+            config['social']['telegram_channel']),
         disable_web_page_preview=True,
         parse_mode="Markdown"
     )
