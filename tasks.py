@@ -43,7 +43,7 @@ verify_button = [
 
 email_button = [
     InlineKeyboardButton(
-        "📧 Your Email [required]",
+        "📧 Sign Up on IBGX [required]",
         callback_data="email",
     ),
 ]
