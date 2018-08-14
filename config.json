@@ -13,7 +13,7 @@
         "help_msg": "*Notice*\n- Only verified users count\n- Make sure to verify and ask your referrals to verify too\n\n*FAQ*\n- What is this project about?\n Watch [Video]({}) or read [Whitepaper]({})"
     },
     "rewards": {
-        "telegram_group": 3.75,
+        "telegram_group": 4,
         "telegram_channel": 4,
         "twitter": 4,
         "facebook": 4,
