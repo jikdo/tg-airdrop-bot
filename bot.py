@@ -25,6 +25,7 @@ from telegram.ext import (
     CallbackQueryHandler,
     messagequeue as mq
 )
+from telegram.ext.dispatcher import run_async
 
 from telegram import (
     ReplyKeyboardMarkup,
@@ -46,6 +47,7 @@ from db import (
     get_user_referral_reward_and_referred_no,
     set_referredby_code,
     set_user_wallet_address,
+    get_users_telegram_id,
 )
 
 from tasks import (
@@ -208,6 +210,32 @@ def receive_eth_address(bot, update):
     )
     return ConversationHandler.END
 
+@run_async
+def send_blast(bot, update, args):
+    """ send message to all participants """
+
+    message = " ".join(args)
+    delivered = 0
+    failed = 0
+
+    receivers = get_users_telegram_id()
+
+    for chat_id in receivers:
+        try:
+            promise = bot.send_message(
+                chat_id=chat_id[0],
+                text=message,
+                disable_web_page_preview=True,
+                )
+            promise.result()
+            delivered += 1
+            print('messages delivered = ' + delivered)
+        except:
+            failed += 1
+    bot.send_message(
+        chat_id=update.message.chat_id,
+        text=config['messages']['report_msg'].format(delivered, failed)
+    )
 
 def cancel(bot, update):
     pass
@@ -264,10 +292,12 @@ reg_convo_handler = ConversationHandler(
 
 # register handlers
 menu_relayer_handler = MessageHandler(Filters.text, menu_relayer)
+send_blast_handler = CommandHandler('blast', send_blast, pass_args=True)
 
 handlers = [
     reg_convo_handler,
     menu_relayer_handler,
+    send_blast_handler,
 ]
 
 for handler in handlers:
