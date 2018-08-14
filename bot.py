@@ -23,6 +23,7 @@ from telegram.ext import (
     MessageHandler,
     Filters,
     CallbackQueryHandler,
+    messagequeue as mq
 )
 
 from telegram import (
@@ -30,6 +31,9 @@ from telegram import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
 )
+
+from telegram.utils.request import Request
+
 import shortuuid
 import psycopg2
 
