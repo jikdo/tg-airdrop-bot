@@ -31,6 +31,7 @@ from telegram import (
     ReplyKeyboardMarkup,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
+    bot
 )
 
 from telegram.utils.request import Request
@@ -229,8 +230,9 @@ def send_blast(bot, update, args):
                 )
             promise.result()
             delivered += 1
-            print('messages delivered = ' + delivered)
-        except:
+        except Exception:
+            import traceback
+            logging.error(traceback.format_exc())
             failed += 1
     bot.send_message(
         chat_id=update.message.chat_id,

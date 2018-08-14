@@ -7,7 +7,7 @@
         "twitter_task": "- Follow us on [Twitter]({}) and retweet our recent tweet.\n- And send me your Twitter username starting with '@'\n- You stop by typing 'skip'",
         "facebook_task": "- Like and Share our [Facebook page]({}).\n- And send me your facebook profile link.\n- You stop by typing 'skip'",
         "email_task": "- Sign up at [InterBlockchain Group Exchange]({})\n- Send me the email you used to register\n- Coupon code is optional\n- You stop by typing 'skip'",
-        "report_msg": "",
+        "report_msg": "*Delivery report*\n- {} delivered\n- {} failed",
         "purchase_msg": "- You can purchase {} tokens at {}  after you Register",
         "gains_msg": "*BALANCE*\n_You have:_\nTelegram Channel - _{} {ticker}_\nTelegram Group - _{} {ticker}_\nTwitter - {} {ticker}\nFacebook - _{} {ticker}_\nReferral - _{} {ticker}_\nYou have referred _{} verified people_\n----------------------\nTotal rewards - _{} {ticker}_\n\n *Invite your friends to earn more*",
         "help_msg": "*Notice*\n- Only verified users count\n- Make sure to verify and ask your referrals to verify too\n\n*FAQ*\n- What is this project about?\n Watch [Video]({}) or read [Whitepaper]({})"

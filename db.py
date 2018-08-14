@@ -639,7 +639,8 @@ def get_users_telegram_id():
         cursor.execute("""
         SELECT telegram_id from users
         """)
+        get_users_telegram_id = cursor.fetchall()
         close_db_connection(conn, cursor)
-        return cursor.fetchall()
+        return get_users_telegram_id
     except psycopg2.Error as e:
         print(e.pgerror + "at line 640")
