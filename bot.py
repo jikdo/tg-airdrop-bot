@@ -221,6 +221,12 @@ def send_blast(bot, update, args):
 
     receivers = get_users_telegram_id()
 
+    bot.send_message(
+        chat_id=update.message.chat_id,
+        text='Sending broadcast {} users ...'.format(len(receivers)),
+        disable_web_page_preview=True,
+    )
+
     for chat_id in receivers:
         try:
             promise = bot.send_message(
