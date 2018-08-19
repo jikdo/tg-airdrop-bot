@@ -4,33 +4,33 @@
         "done_msg": "- Congratulations!\n- Use Menu to navigate",
         "invite_msg": "Join {} bounty program. Follow {}",
         "fwd_invite_msg": "Send the above message to all your friends to earn {} {} each",
-        "twitter_task": "- Follow us on [Twitter]({}) and retweet our recent tweet.\n- And send me your Twitter username starting with '@'\n- You stop by pressing 'skip'",
-        "facebook_task": "- Like and Share our [Facebook page]({}).\n- And send me your facebook profile link.\n- You stop by pressing 'skip'",
-        "report_msg": "",
-        "purchase_msg": "- You can purchase {} tokens at {}  after you Register\n\n- If you already have a SID account then after you login at https://shareinternetdata.io/members/#/login",
-        "gains_msg": "*BALANCE*\n_You have:_\nTelegram Channel - _{} {ticker}_\nTelegram Group - _{} {ticker}_\nTwitter - {} {ticker}\nFacebook - _{} {ticker}_\nReferral - _{} {ticker}_\nYou have referred _{} people_\n----------------------\nTotal rewards - _{} {ticker}_\n\n *Invite your friends to earn more*",
-        "help_msg": "*FAQ comes here*"
+        "twitter_task": "- Follow us on [Twitter]({}) and retweet our recent tweet.\n- And send me your Twitter username starting with '@'\n- You stop by typing 'skip'",
+        "facebook_task": "- Like and Share our [Facebook page]({}).\n- And send me your facebook profile link.\n- You stop by typing 'skip'",
+        "email_task": "Send me your email",
+        "report_msg": "*Delivery report*\n- {} delivered\n- {} failed",
+        "purchase_msg": "- You can purchase {} tokens at {}  after you Register",
+        "gains_msg": "*BALANCE*\n_You have:_\nTelegram Channel - _{} {ticker}_\nTelegram Group - _{} {ticker}_\nTwitter - {} {ticker}\nFacebook - _{} {ticker}_\nReferral - _{} {ticker}_\nYou have referred _{} verified people_\n----------------------\nTotal rewards - _{} {ticker}_\n\n *Invite your friends to earn more*",
+        "help_msg": "*Notice*\n- Only verified users count\n- Make sure to verify and ask your referrals to verify too\n\n*FAQ*\n- What is this project about?\n Watch [Video]({}) or read [Whitepaper]({})"
     },
     "rewards": {
-        "telegram_group": 20,
-        "telegram_channel": 30,
-        "email": 40,
-        "twitter": 50,
-        "facebook": 60,
-        "referral": 70,
-        "cap": 1000
+        "telegram_group": 4,
+        "telegram_channel": 4,
+        "twitter": 4,
+        "facebook": 4,
+        "referral": 4,
+        "cap": 100
     },
     "ticker": "ICO",
     "social": {
-        "twitter": "https://twitter.com/*",
-        "facebook": "https://www.facebook.com/*",
-        "telegram_group": "https://t.me/*",
-        "telegram_channel": "https://t.me/*"
+        "twitter": "https://twitter.com/",
+        "facebook": "https://www.facebook.com/",
+        "telegram_group": "https://t.me/",
+        "telegram_channel": "http://t.me/"
     },
-    "ICO_name": "The ICO",
-    "website": "https://ico.io",
-    "signup": "https://ico.io/signup",
-    "FAQ": "https://ico/faqs",
-    "whitepaper": "https://wpaper.io",
-    "bot_username": "supertestabot"
+    "ICO_name": "ICO",
+    "website": "",
+    "signup": "",
+    "FAQ": "",
+    "whitepaper": "",
+    "bot_username": ""
 }

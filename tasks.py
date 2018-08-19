@@ -26,6 +26,7 @@ from db import (
     set_user_referral_reward_and_referred_no,
     is_validated,
     validate_user,
+    get_total_rewards,
 )
 
 # get config
@@ -42,7 +43,7 @@ verify_button = [
 
 email_button = [
     InlineKeyboardButton(
-        "📧 Your Email [required]",
+        "📧 Sign Up on IBGX [required]",
         callback_data="email",
     ),
 ]
@@ -77,6 +78,7 @@ facebook_button = [
 
 task_list_buttons = [
     verify_button,
+    email_button,
     telegram_channel_button,
     telegram_group_button,
     twitter_button,
@@ -283,7 +285,7 @@ def reward_telegram_channel(bot, update):
     bot.send_message(
         chat_id=update.effective_user.id,
         text="Join our [Telegram News Channel]({})".format(
-            config['social']['telegram_group']),
+            config['social']['telegram_channel']),
         disable_web_page_preview=True,
         parse_mode="Markdown"
     )
@@ -334,7 +336,7 @@ def receive_verification_answer(bot, update):
     except ValueError:
         bot.send_message(
             chat_id=update.message.chat_id,
-            text='Wrong answer. Press button and try again'
+            text='Wrong answer. Press "Are You Human" button and try again'
         )
         return ConversationHandler.END
     right_answer = get_verification_answer(telegram_id)
@@ -349,6 +351,17 @@ def receive_verification_answer(bot, update):
         # update referral if any
         referredby = get_referredby_code(telegram_id)
         if referredby:
-            set_user_referral_reward_and_referred_no(
-            referredby, config['rewards']['referral'])
+            total = get_total_rewards()
+            if total is None:
+                total = 0
+
+            if total < config['rewards']['cap']:
+                set_user_referral_reward_and_referred_no(
+                    referredby, config['rewards']['referral'])
+        return ConversationHandler.END
+    else:
+        bot.send_message(
+            chat_id=update.message.chat_id,
+            text='Wrong answer. Press "Are You Human" button and try again'
+        )
         return ConversationHandler.END

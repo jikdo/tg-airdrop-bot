@@ -75,7 +75,7 @@ def send_help_info(bot, update):
     bot.send_message(
         chat_id=update.message.chat_id,
         text=config['messages']['help_msg'].format(
-            config['FAQ']
+            config['FAQ'], config['whitepaper'],
         ),
         disable_web_page_preview=True,
         parse_mode="Markdown"
@@ -87,7 +87,7 @@ def send_purchase_info(bot, update):
         chat_id=update.message.chat_id,
         text=config['messages']['purchase_msg'].format(
             config['ticker'],
-            config['signup'],
+            config['website'],
         ),
         disable_web_page_preview=True,
     )

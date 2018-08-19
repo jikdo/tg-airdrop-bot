@@ -625,3 +625,22 @@ def validate_user(telegram_id):
         close_db_connection(conn, cursor)
     except psycopg2.Error as e:
         print(e.pgerror + 'at line 623 in db.py')
+
+
+def get_users_telegram_id():
+    """
+    Get all users telegram id
+
+    Returns:
+        list: A list of telegram IDs of all users
+    """
+    try:
+        conn, cursor = connect_db()
+        cursor.execute("""
+        SELECT telegram_id from users
+        """)
+        get_users_telegram_id = cursor.fetchall()
+        close_db_connection(conn, cursor)
+        return get_users_telegram_id
+    except psycopg2.Error as e:
+        print(e.pgerror + "at line 640")
